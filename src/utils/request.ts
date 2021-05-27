@@ -9,7 +9,6 @@ import router from '../router'
 import storage from './storage'
 import { TOKEN_INVALID, NETWORK_ERROR } from '../const'
 
-
 // 创建axios实例对象，添加全局配置
 const service = axios.create({
     baseURL: config.baseApi,
@@ -19,17 +18,17 @@ const service = axios.create({
 // 请求拦截
 service.interceptors.request.use((req) => {
     const headers = req.headers;
-    const { token } = storage.getItem('userInfo');
-    if (!headers.Authorization) headers.Authorization = 'Bearer ' + token;
+    // const { token } = storage.getItem('userInfo');
+    // if (!headers.Authorization) headers.Authorization = 'Bearer ' + token;
     return req;
 })
 
 // 响应拦截
 service.interceptors.response.use((res) => {
-    const { code, data, msg } = res.data;
-    if (code === 200) {
+    const { errorCode, data, msg } = res.data;
+    if (errorCode === 200) {
         return data;
-    } else if (code === 500001) {
+    } else if (errorCode === 500001) {
         ElMessage.error(TOKEN_INVALID)
         setTimeout(() => {
             router.push('/login')

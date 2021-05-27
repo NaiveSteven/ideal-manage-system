@@ -1,34 +1,41 @@
-import {createRouter, createWebHashHistory} from 'vue-router'
-import Home from './../components/Home.vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
-    // {
-    //     name: 'home',
-    //     path: '/',
-    //     meta: {
-    //         title: '首页'
-    //     },
-    //     component: Home,
-    //     redirect: '/welcome',
-    //     children: [
-    //         {
-    //             name: 'welcome',
-    //             path: '/welcome',
-    //             meta: {
-    //                 title: '欢迎体验Vue3全栈课程'
-    //             },
-    //             component: () => import('./../pages/Welcome.vue')
-    //         },
-    //     ]
-    // },
+    {
+        name: 'index',
+        path: '/',
+        meta: {
+            title: '首页'
+        },
+        component: () => import('../pages/HomePage.vue'),
+        redirect: '/ideal',
+        children: [
+            {
+                name: 'welcome',
+                path: '/ideal',
+                meta: {
+                    title: '欢迎'
+                },
+                component: () => import('../pages/WelcomePage.vue')
+            },
+            {
+                name: 'consumer',
+                path: 'ideal/consumerManage',
+                meta: {
+                    title: '小程序用户管理'
+                },
+                component: () => import('../pages/ConsumerPage.vue')
+            },
+        ]
+    },
     {
         name: 'login',
         path: '/login',
         meta: {
             title: '登录'
         },
-        component: () => import('./../pages/Login.vue')
-    }
+        component: () => import('../pages/LoginPage.vue')
+    },
 ]
 const router = createRouter({
     history: createWebHashHistory(),

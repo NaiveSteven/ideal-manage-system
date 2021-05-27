@@ -15,7 +15,7 @@
         :collapse="isCollapse"
         class="nav-menu"
       >
-        <tree-menu :userMenu="userMenu" />
+        <tree-menu :menuData="menuData" />
       </el-menu>
     </div>
     <div :class="['content-right', isCollapse ? 'fold' : 'unfold']">
@@ -52,7 +52,10 @@
           </el-dropdown>
         </div>
       </div>
-      <div class="wrapper">
+      <div
+        class="bg-gray-200 p-6 overflow-auto"
+        style="height: calc(100vh - 50px)"
+      >
         <router-view></router-view>
       </div>
     </div>
@@ -60,8 +63,9 @@
 </template>
 
 <script>
-import TreeMenu from "./TreeMenu.vue";
-import BreadCrumb from "./BreadCrumb.vue";
+import TreeMenu from "../components/TreeMenu.vue";
+import BreadCrumb from "../components/BreadCrumb.vue";
+import { MENU_DATA } from "../const/index.ts";
 export default {
   name: "Home",
   components: { TreeMenu, BreadCrumb },
@@ -70,14 +74,11 @@ export default {
       isCollapse: false,
       userInfo: this.$store.state.userInfo,
       noticeCount: 0,
-      userMenu: [],
+      menuData: MENU_DATA,
       activeMenu: location.hash.slice(1),
     };
   },
-  mounted() {
-    this.getNoticeCount();
-    this.getMenuList();
-  },
+  mounted() {},
   methods: {
     toggle() {
       this.isCollapse = !this.isCollapse;
@@ -87,22 +88,6 @@ export default {
       this.$store.commit("saveUserInfo", "");
       this.userInfo = null;
       this.$router.push("/login");
-    },
-    async getNoticeCount() {
-      try {
-        const count = await this.$api.noticeCount();
-        this.noticeCount = count;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async getMenuList() {
-      try {
-        const list = await this.$api.getMenuList();
-        this.userMenu = list;
-      } catch (error) {
-        console.error(error);
-      }
     },
   },
 };
@@ -145,6 +130,7 @@ export default {
   }
   .content-right {
     margin-left: 200px;
+    overflow: hidden;
     // 合并
     &.fold {
       margin-left: 64px;
@@ -177,15 +163,6 @@ export default {
           cursor: pointer;
           color: #409eff;
         }
-      }
-    }
-    .wrapper {
-      background: #eef0f3;
-      padding: 20px;
-      height: calc(100vh - 50px);
-      .main-page {
-        background: #fff;
-        height: 100%;
       }
     }
   }

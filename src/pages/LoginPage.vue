@@ -3,22 +3,26 @@
     <div class="modal">
       <el-form ref="userForm" :model="user" status-icon :rules="rules">
         <div class="title">Ideal</div>
-        <el-form-item prop="userName">
+        <el-form-item prop="username">
           <el-input
             type="text"
             prefix-icon="el-icon-user"
-            v-model="user.userName"
+            v-model="user.username"
           />
         </el-form-item>
-        <el-form-item prop="userPwd">
+        <el-form-item prop="password">
           <el-input
             type="password"
             prefix-icon="el-icon-view"
-            v-model="user.userPwd"
+            v-model="user.password"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn-login" @click="login"
+          <el-button
+            :loading="isBtnLoading"
+            type="primary"
+            class="btn-login"
+            @click="handleConfirm"
             >登录</el-button
           >
         </el-form-item>
@@ -28,23 +32,25 @@
 </template>
 
 <script>
+import { ElMessage } from "element-plus";
 export default {
   name: "login",
   data() {
     return {
+      isBtnLoading: false,
       user: {
-        userName: "",
-        userPwd: "",
+        username: "",
+        password: "",
       },
       rules: {
-        userName: [
+        username: [
           {
             required: true,
             message: "请输入用户名",
             trigger: "blur",
           },
         ],
-        userPwd: [
+        password: [
           {
             required: true,
             message: "请输入密码",
@@ -55,20 +61,28 @@ export default {
     };
   },
   methods: {
-    login() {
+    async login() {
+      this.isBtnLoading = true;
+      try {
+        const res = await this.$api.login(this.user);
+        this.$store.commit("saveUserInfo", res);
+        this.$router.push({ name: "home" });
+      } catch (error) {
+        ElMessage.error(error.message || error);
+      }
+      this.isBtnLoading = false;
+    },
+    handleConfirm() {
       this.$refs.userForm.validate((valid) => {
         if (valid) {
-          this.$api.login(this.user).then((res) => {
-            this.$store.commit("saveUserInfo", res);
-            this.$router.push("/welcome");
-          });
+          this.login();
         } else {
           return false;
         }
       });
     },
     goHome() {
-      this.$router.push("/welcome");
+      this.$router.push({ name: "home" });
     },
   },
 };

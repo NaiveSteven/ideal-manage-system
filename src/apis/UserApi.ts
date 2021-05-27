@@ -1,10 +1,10 @@
 import request from '../utils/request'
-import { LoginReq } from '../interfaces/Login'
+import { GetUserListReq } from '../interfaces/User'
 
 export default {
-    login(params: LoginReq) {
+    getUserList(params: GetUserListReq) {
         return request({
-            url: '/admin/adminUser',
+            url: '/user/getUserList',
             method: 'post',
             data: params,
         })
