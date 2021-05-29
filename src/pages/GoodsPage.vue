@@ -55,6 +55,25 @@
         v-loading="isTableLoading"
       >
         <el-table-column type="selection" width="55" />
+        <el-table-column label="商品名" width="200">
+          <template #default="scope">
+            <div class="flex flex-row">
+              <img :src="scope.row.imageUrl" width="64" height="64" />
+              <div class="ml-2 flex flex-col truncate">
+                <el-tooltip :content="scope.row.name">
+                  <div class="mt-2 mb-1 text-black-85 flex flex-start">
+                    <span class="truncate">{{ scope.row.name }}</span>
+                  </div>
+                </el-tooltip>
+                <el-tooltip :content="scope.row.desc">
+                  <div class="mb-2 text-black-65 flex flex-start">
+                    <span class="truncate">{{ scope.row.desc }}</span>
+                  </div>
+                </el-tooltip>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column
           v-for="item in columns"
           :key="item.prop"
@@ -148,10 +167,6 @@ export default {
     });
     const columns = reactive([
       {
-        label: "商品名",
-        prop: "name",
-      },
-      {
         label: "商品类别",
         prop: "goodsTypeId",
         formatter(row, column, value) {
@@ -164,10 +179,6 @@ export default {
         formatter(row, column, value) {
           return utils.getListName(value, brandList);
         },
-      },
-      {
-        label: "描述",
-        prop: "desc",
       },
       {
         label: "价格",
