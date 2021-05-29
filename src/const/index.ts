@@ -2,6 +2,12 @@ import { MenuItem } from '../interfaces/Menu';
 export const TOKEN_INVALID = 'Token认证失败，请重新登录'
 export const NETWORK_ERROR = '网络请求异常，请稍后重试'
 
+export const DIALOG_MODE_ADD = 'add';
+export const DIALOG_MODE_EDIT = 'edit';
+
+export const DEL_DIALOG_SINGLE = 'single';
+export const DEL_DIALOG_MULTIPLE = 'multiple';
+
 export const MENU_DATA: MenuItem[] = [
     {
         menuName: '首页',
@@ -81,5 +87,24 @@ export const MENU_DATA: MenuItem[] = [
         icon: 'el-icon-c-scale-to-original',
         permission: 'menu.goodsType-manage',
         path: '/ideal/goodsTypeManage',
+    },
+];
+
+export const GOOD_STATE = [
+    {
+        label: '全部',
+        value: 0,
+    },
+    {
+        label: '在售',
+        value: 1,
+    },
+    {
+        label: '下架',
+        value: 2,
+    },
+    {
+        label: '售罄',
+        value: 3,
     },
 ];

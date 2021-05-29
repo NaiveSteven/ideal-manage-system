@@ -21,10 +21,10 @@
             />
           </template>
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)" size="mini"
+            <el-button type="text" @click="handleEdit(scope.row)" size="mini"
               >编辑</el-button
             >
-            <el-button type="danger" size="mini" @click="handleDel(scope.row)"
+            <el-button type="text" size="mini" @click="handleDel(scope.row)"
               >删除</el-button
             >
           </template>
@@ -35,7 +35,7 @@
         background
         layout="prev, pager, next"
         :total="pager.total"
-        :page-size="pager.pageSize"
+        :page-size="pager.limit"
         @current-change="handleCurrentChange"
       />
     </el-card>
@@ -53,6 +53,7 @@ export default {
     const pager = reactive({
       page: 1,
       limit: 10,
+      total: 10,
     });
     const formData = reactive({
       keyword: "",

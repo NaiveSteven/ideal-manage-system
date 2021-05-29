@@ -1,3 +1,4 @@
+import { Ref } from 'vue';
 /**
  * 工具函数封装
  */
@@ -22,5 +23,15 @@ export default {
             }
         }
         return fmt;
+    },
+    getListName(id: number, list: Ref) {
+        let obj = {} as any;
+        obj = list.value.find((item: any) => {
+            return item.id === id;
+        });
+        if (!obj || Object.keys(obj).length === 0) {
+            return "";
+        }
+        return obj.name;
     }
 }

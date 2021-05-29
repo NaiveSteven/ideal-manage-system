@@ -26,6 +26,14 @@ const routes = [
                 },
                 component: () => import('../pages/ConsumerPage.vue')
             },
+            {
+                name: 'goodsManage',
+                path: '/ideal/goodsManage',
+                meta: {
+                    title: '商品管理'
+                },
+                component: () => import('../pages/GoodsPage.vue')
+            },
         ]
     },
     {
