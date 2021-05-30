@@ -81,6 +81,7 @@
           :label="item.label"
           :width="item.width"
           :formatter="item.formatter"
+          :show-overflow-tooltip="item.showOverflowTooltip"
         >
           <template v-if="item.prop === 'state'" #default="scope">
             <el-tag v-if="scope.row.state === 1" type="success">在售</el-tag>
@@ -113,7 +114,7 @@
         :curItem="curItem"
         :mode="dialogMode"
         v-model="isShowAEDialog"
-        @updateList="handleQuery"
+        @updateList="getGoodsList"
       />
       <DelDialog
         v-model="isShowDelDialog"
@@ -169,6 +170,8 @@ export default {
       {
         label: "商品类别",
         prop: "goodsTypeId",
+        width: 100,
+        showOverflowTooltip: true,
         formatter(row, column, value) {
           return utils.getListName(value, goodsTypeList);
         },
@@ -176,6 +179,8 @@ export default {
       {
         label: "品牌",
         prop: "brandId",
+        width: 100,
+        showOverflowTooltip: true,
         formatter(row, column, value) {
           return utils.getListName(value, brandList);
         },
