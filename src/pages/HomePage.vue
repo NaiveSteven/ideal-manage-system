@@ -1,6 +1,6 @@
 <template>
   <div class="basic-layout">
-    <div :class="['nav-side', isCollapse ? 'fold' : 'unfold']">
+    <div :class="['nav-side', isCollapse ? 'fold' : 'unfold', 'overflow-hidden']">
       <!-- 系统LOGO -->
       <div class="logo">
         <img src="./../assets/logo.png" />
