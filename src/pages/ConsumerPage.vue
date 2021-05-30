@@ -8,6 +8,7 @@
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
+          :min-width="item.minWidth"
           :formatter="item.formatter"
         >
         </el-table-column>
@@ -64,10 +65,12 @@ export default {
       {
         label: "用户ID",
         prop: "id",
+        minWidth: 100,
       },
       {
         label: "用户名",
         prop: "name",
+        minWidth: 120,
       },
       {
         label: "注册时间",

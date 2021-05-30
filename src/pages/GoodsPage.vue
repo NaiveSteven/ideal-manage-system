@@ -80,6 +80,7 @@
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
+          :min-width="item.minWidth"
           :formatter="item.formatter"
           :show-overflow-tooltip="item.showOverflowTooltip"
         >
@@ -188,26 +189,32 @@ export default {
       {
         label: "价格",
         prop: "price",
+        minWidth: 100,
       },
       {
         label: "市场价",
         prop: "marketPrice",
+        minWidth: 100,
       },
       {
         label: "规格",
         prop: "size",
+        minWidth: 100,
       },
       {
         label: "销量",
         prop: "saleNum",
+        minWidth: 100,
       },
       {
         label: "库存",
         prop: "count",
+        minWidth: 100,
       },
       {
         label: "状态",
         prop: "state",
+        minWidth: 100,
         formatter(row, column, value) {
           return {
             1: "在售",
@@ -220,7 +227,7 @@ export default {
       {
         label: "创建时间",
         prop: "createdAt",
-        width: 180,
+        width: 150,
         formatter: (row, column, value) => {
           return utils.formateDate(new Date(value));
         },

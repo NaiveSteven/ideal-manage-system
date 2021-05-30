@@ -22,6 +22,7 @@
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
+          :min-width="item.minWidth"
           :formatter="item.formatter"
           :show-overflow-tooltip="item.showOverflowTooltip"
         >
@@ -106,10 +107,12 @@ export default {
       {
         label: "品牌名",
         prop: "name",
+        minWidth: 120,
       },
       {
         label: "创建时间",
         prop: "createdAt",
+        minWidth: 150,
         formatter: (row, column, value) => {
           return utils.formateDate(new Date(value));
         },
