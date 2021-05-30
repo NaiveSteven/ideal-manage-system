@@ -50,8 +50,8 @@ export const MENU_DATA: MenuItem[] = [
                 menuName: '权限点管理',
                 name: 'point-manage',
                 icon: 'el-icon-lollipop',
-                permission: 'menu.',
-                path: '/ideal/adminUser',
+                permission: 'menu.permission-point-manage',
+                path: '/ideal/permissionManage',
             },
             {
                 menuName: '角色管理',
@@ -123,6 +123,25 @@ export const GOOD_STATE = [
     },
     {
         label: '售罄',
+        value: 3,
+    },
+];
+
+export const PERMISSION_TYPE_LIST = [
+    {
+        label: '全部',
+        value: 0,
+    },
+    {
+        label: '菜单',
+        value: 1,
+    },
+    {
+        label: '按钮',
+        value: 2,
+    },
+    {
+        label: '数据',
         value: 3,
     },
 ];

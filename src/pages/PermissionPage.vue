@@ -1,17 +1,28 @@
 <template>
   <div>
     <el-card>
-      <div class="mb-6">
-        <el-button type="primary" @click="handleCreate">新增</el-button>
-        <el-button
-          type="danger"
-          :disabled="checkedBrandIds.length === 0"
-          @click="handleDel()"
-          >批量删除</el-button
+      <div class="mb-6 flex justify-between items-center">
+        <div>
+          <el-button type="primary" @click="handleCreate">新增</el-button>
+          <el-button
+            type="danger"
+            :disabled="checkedPermissionIds.length === 0"
+            @click="handleDel()"
+            >批量删除</el-button
+          >
+        </div>
+        <el-select
+          v-model="permissionForm.permission_type"
+          @change="handleQuery"
+          placeholder="请选择类型"
         >
+          <template v-for="item in permissionTypeList" :key="item.value">
+            <el-option :value="item.value" :label="item.label"></el-option>
+          </template>
+        </el-select>
       </div>
       <el-table
-        :data="brandList"
+        :data="permissionList"
         @selection-change="handleSelectionChange"
         v-loading="isTableLoading"
       >
@@ -22,6 +33,7 @@
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
+          :min-width="item.minWidth"
           :formatter="item.formatter"
           :show-overflow-tooltip="item.showOverflowTooltip"
         >
@@ -30,9 +42,9 @@
           <template #header>
             <el-input
               size="mini"
-              v-model="brandForm.keyword"
-              @change="getBrandList"
-              placeholder="请输入品牌名"
+              v-model="permissionForm.keyword"
+              @change="getPermissionList"
+              placeholder="请输入权限点名"
             />
           </template>
           <template #default="scope">
@@ -53,11 +65,11 @@
         :page-size="pager.limit"
         @current-change="handleCurrentChange"
       />
-      <AddEditBrandDialog
+      <AddEditPermissionDialog
         :curItem="curItem"
         :mode="dialogMode"
         v-model="isShowAEDialog"
-        @updateList="getBrandList"
+        @updateList="getPermissionList"
       />
       <DelDialog
         v-model="isShowDelDialog"
@@ -69,7 +81,7 @@
   </div>
 </template>
 <script>
-import AddEditBrandDialog from "../components/brand/AddEditBrandDialog.vue";
+import AddEditPermissionDialog from "../components/Permission/AddEditPermissionDialog.vue";
 import DelDialog from "../components/common/DelDialog.vue";
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 import {
@@ -77,15 +89,16 @@ import {
   DIALOG_MODE_EDIT,
   DEL_DIALOG_SINGLE,
   DEL_DIALOG_MULTIPLE,
+  PERMISSION_TYPE_LIST,
 } from "../const";
 import utils from "./../utils/utils";
 export default {
-  name: "BrangPage",
-  components: { DelDialog, AddEditBrandDialog },
+  name: "PermissionPage",
+  components: { DelDialog, AddEditPermissionDialog },
   setup() {
     const { ctx } = getCurrentInstance();
-    const checkedBrandIds = ref([]);
-    const brandList = ref([]);
+    const checkedPermissionIds = ref([]);
+    const permissionList = ref([]);
     const contents = ref([]);
     const isTableLoading = ref(false);
     const isShowAEDialog = ref(false);
@@ -93,9 +106,11 @@ export default {
     const isShowDelDialog = ref(false);
     const dialogMode = ref(DIALOG_MODE_ADD);
     const delMode = ref(DEL_DIALOG_MULTIPLE);
+    const permissionTypeList = ref(PERMISSION_TYPE_LIST);
     const curItem = ref({});
-    const brandForm = reactive({
+    const permissionForm = reactive({
       keyword: "",
+      permission_type: 0,
     });
     const pager = reactive({
       page: 1,
@@ -104,12 +119,34 @@ export default {
     });
     const columns = reactive([
       {
-        label: "品牌名",
+        label: "名称",
         prop: "name",
+        minWidth: "110",
+      },
+      {
+        label: "permission",
+        prop: "permission",
+        minWidth: "110",
+        showOverflowTooltip: true,
+      },
+      {
+        label: "权限点类别",
+        prop: "permission_type",
+        minWidth: "110",
+        formatter(row, column, value) {
+          return utils.getListLabel(value, PERMISSION_TYPE_LIST);
+        },
+      },
+      {
+        label: "所属模块名",
+        prop: "module_name",
+        minWidth: "110",
+        showOverflowTooltip: true,
       },
       {
         label: "创建时间",
         prop: "createdAt",
+        width: "150",
         formatter: (row, column, value) => {
           return utils.formateDate(new Date(value));
         },
@@ -117,20 +154,20 @@ export default {
     ]);
 
     onMounted(() => {
-      getBrandList();
+      getPermissionList();
     });
 
-    const getBrandList = async () => {
+    const getPermissionList = async () => {
       isTableLoading.value = true;
       try {
         const params = { ...pager };
-        Object.keys(brandForm).forEach((item) => {
-          if (brandForm[item]) {
-            params[item] = brandForm[item];
+        Object.keys(permissionForm).forEach((item) => {
+          if (permissionForm[item]) {
+            params[item] = permissionForm[item];
           }
         });
-        const { count, rows } = await ctx.$api.getBrandList(params);
-        brandList.value = rows;
+        const { count, rows } = await ctx.$api.getPermissionList(params);
+        permissionList.value = rows;
         pager.total = count;
       } catch (error) {
         ctx.$message.error(error.msg || error);
@@ -138,14 +175,14 @@ export default {
       isTableLoading.value = false;
     };
 
-    const deleteBrand = async (ids) => {
+    const deletePermission = async (ids) => {
       isDelBtnLoading.value = true;
       try {
-        await ctx.$api.deleteBrand({ id: ids });
+        await ctx.$api.deletePermission({ id: ids });
         ctx.$message.success("删除成功");
         isDelBtnLoading.value = false;
         isShowDelDialog.value = false;
-        getBrandList();
+        getPermissionList();
       } catch (error) {
         ctx.$message.error(error.msg || error);
       }
@@ -154,9 +191,9 @@ export default {
 
     const handleDelConfirm = () => {
       if (delMode.value === DEL_DIALOG_SINGLE) {
-        deleteBrand([curItem.value.id]);
+        deletePermission([curItem.value.id]);
       } else {
-        deleteBrand(checkedBrandIds.value);
+        deletePermission(checkedPermissionIds.value);
       }
     };
 
@@ -173,7 +210,7 @@ export default {
       list.map((item) => {
         arr.push(item.id);
       });
-      checkedBrandIds.value = arr;
+      checkedPermissionIds.value = arr;
     };
 
     const handleCreate = () => {
@@ -189,17 +226,17 @@ export default {
 
     const handleQuery = () => {
       pager.page = 1;
-      getBrandList();
+      getPermissionList();
     };
 
     const handleReset = (form) => {
       ctx.$refs[form].resetFields();
-      getBrandList();
+      getPermissionList();
     };
 
     const handleCurrentChange = (current) => {
       pager.page = current;
-      getBrandList();
+      getPermissionList();
     };
 
     return {
@@ -208,12 +245,12 @@ export default {
       curItem,
       isShowAEDialog,
       isTableLoading,
-      brandList,
-      brandForm,
+      permissionList,
+      permissionForm,
       columns,
       pager,
-      checkedBrandIds,
-      getBrandList,
+      checkedPermissionIds,
+      getPermissionList,
       handleQuery,
       handleReset,
       handleCurrentChange,
@@ -222,10 +259,11 @@ export default {
       handleEdit,
       handleSelectionChange,
       handleCreate,
-      deleteBrand,
+      deletePermission,
       isDelBtnLoading,
       isShowDelDialog,
       contents,
+      permissionTypeList,
     };
   },
 };

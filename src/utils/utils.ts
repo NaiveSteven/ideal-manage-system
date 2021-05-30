@@ -33,5 +33,15 @@ export default {
             return "";
         }
         return obj.name;
+    },
+    getListLabel(value: number, list: Array<{[index: string]: number}>) {
+        let obj = {} as any;
+        obj = list.find((item: any) => {
+            return item.value === value;
+        });
+        if (!obj || Object.keys(obj).length === 0) {
+            return "";
+        }
+        return obj.label;
     }
 }

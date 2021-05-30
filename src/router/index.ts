@@ -42,6 +42,14 @@ const routes = [
                 },
                 component: () => import('../pages/BrandPage.vue')
             },
+            {
+                name: 'permissionManage',
+                path: '/ideal/permissionManage',
+                meta: {
+                    title: '权限点管理'
+                },
+                component: () => import('../pages/PermissionPage.vue')
+            },
         ]
     },
     {

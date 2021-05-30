@@ -138,7 +138,7 @@ import {
 } from "../const";
 import utils from "./../utils/utils";
 export default {
-  name: "user",
+  name: "GoodsPage",
   components: { AddEditGoodsDialog, DelDialog },
   setup() {
     const { ctx } = getCurrentInstance();

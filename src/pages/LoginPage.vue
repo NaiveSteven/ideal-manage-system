@@ -34,7 +34,7 @@
 <script>
 import { ElMessage } from "element-plus";
 export default {
-  name: "login",
+  name: "LoginPage",
   data() {
     return {
       isBtnLoading: false,

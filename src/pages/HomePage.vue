@@ -67,7 +67,7 @@ import TreeMenu from "../components/TreeMenu.vue";
 import BreadCrumb from "../components/BreadCrumb.vue";
 import { MENU_DATA } from "../const/index.ts";
 export default {
-  name: "Home",
+  name: "HomePage",
   components: { TreeMenu, BreadCrumb },
   data() {
     return {

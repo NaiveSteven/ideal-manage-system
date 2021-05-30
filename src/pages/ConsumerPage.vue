@@ -46,7 +46,7 @@ import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 import utils from "../utils/utils";
 import { ElMessage } from "element-plus";
 export default {
-  name: "user",
+  name: "ConsumerPage",
   setup() {
     const { ctx } = getCurrentInstance();
     const userList = ref([]);
