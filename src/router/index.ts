@@ -34,6 +34,14 @@ const routes = [
                 },
                 component: () => import('../pages/GoodsPage.vue')
             },
+            {
+                name: 'brandManage',
+                path: '/ideal/brandManage',
+                meta: {
+                    title: '品牌管理'
+                },
+                component: () => import('../pages/BrandPage.vue')
+            },
         ]
     },
     {
