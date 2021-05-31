@@ -12,7 +12,7 @@ const routes = [
         children: [
             {
                 name: 'welcome',
-                path: '/ideal',
+                path: 'ideal',
                 meta: {
                     title: '欢迎'
                 },
@@ -28,7 +28,7 @@ const routes = [
             },
             {
                 name: 'goodsManage',
-                path: '/ideal/goodsManage',
+                path: 'ideal/goodsManage',
                 meta: {
                     title: '商品管理'
                 },
@@ -36,7 +36,7 @@ const routes = [
             },
             {
                 name: 'brandManage',
-                path: '/ideal/brandManage',
+                path: 'ideal/brandManage',
                 meta: {
                     title: '品牌管理'
                 },
@@ -44,7 +44,7 @@ const routes = [
             },
             {
                 name: 'permissionManage',
-                path: '/ideal/permissionManage',
+                path: 'ideal/permissionManage',
                 meta: {
                     title: '权限点管理'
                 },
