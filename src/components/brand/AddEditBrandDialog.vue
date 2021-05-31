@@ -108,7 +108,7 @@ export default {
     const handleAdd = async () => {
       isBtnLoading.value = true;
       try {
-        await ctx.$api.addBrand({ ...dialogForm, adminUserId: 1 });
+        await ctx.$api.addBrand({ ...dialogForm });
         visible.value = false;
         ctx.$message.success("创建成功");
         emit("updateList");
@@ -121,7 +121,7 @@ export default {
     const handleUpdate = async () => {
       isBtnLoading.value = true;
       try {
-        const params = { ...dialogForm, id: props.curItem.id, adminUserId: 1 };
+        const params = { ...dialogForm, id: props.curItem.id };
         await ctx.$api.updateBrand(params);
         visible.value = false;
         ctx.$message.success("编辑成功");
