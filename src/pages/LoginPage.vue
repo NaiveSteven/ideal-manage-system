@@ -66,8 +66,9 @@ export default {
       try {
         const res = await this.$api.login(this.user);
         this.$store.commit("saveUserInfo", res);
-        this.$router.push({ name: "home" });
+        this.$router.push({ name: "welcome" });
       } catch (error) {
+        console.log(error,'error');
         ElMessage.error(error.message || error);
       }
       this.isBtnLoading = false;
@@ -80,9 +81,6 @@ export default {
           return false;
         }
       });
-    },
-    goHome() {
-      this.$router.push({ name: "home" });
     },
   },
 };

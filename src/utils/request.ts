@@ -18,25 +18,25 @@ const service = axios.create({
 // 请求拦截
 service.interceptors.request.use((req) => {
     const headers = req.headers;
-    // const { token } = storage.getItem('userInfo');
-    // if (!headers.Authorization) headers.Authorization = 'Bearer ' + token;
+    const userInfo = storage.getItem('userInfo');
+    if (!headers.Authorization && userInfo) headers.Authorization = 'Bearer ' + userInfo.token;
     return req;
 })
 
 // 响应拦截
 service.interceptors.response.use((res) => {
-    const { errorCode, data, msg } = res.data;
+    const { errorCode, data, errorMsg } = res.data;
     if (errorCode === 200) {
         return data;
-    } else if (errorCode === 500001) {
+    } else if (errorCode === 401) {
         ElMessage.error(TOKEN_INVALID)
         setTimeout(() => {
             router.push('/login')
         }, 1500)
         return Promise.reject(TOKEN_INVALID)
     } else {
-        ElMessage.error(msg || NETWORK_ERROR)
-        return Promise.reject(msg || NETWORK_ERROR)
+        ElMessage.error(errorMsg || NETWORK_ERROR)
+        return Promise.reject(errorMsg || NETWORK_ERROR)
     }
 })
 /**

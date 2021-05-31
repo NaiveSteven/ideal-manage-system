@@ -1,6 +1,8 @@
 <template>
   <div class="basic-layout">
-    <div :class="['nav-side', isCollapse ? 'fold' : 'unfold', 'overflow-hidden']">
+    <div
+      :class="['nav-side', isCollapse ? 'fold' : 'unfold', 'overflow-hidden']"
+    >
       <!-- 系统LOGO -->
       <div class="logo">
         <img src="./../assets/logo.png" />
@@ -38,7 +40,7 @@
           </el-badge>
           <el-dropdown @command="handleLogout">
             <span class="user-link">
-              {{ userInfo.userName }}
+              {{ userInfo.username }}
               <i class="el-icon--right"></i>
             </span>
             <template #dropdown>
@@ -72,7 +74,7 @@ export default {
   data() {
     return {
       isCollapse: false,
-      userInfo: this.$store.state.userInfo,
+      userInfo: this.$store.state.userInfo || { username: "", userEmail: "" },
       noticeCount: 0,
       menuData: MENU_DATA,
       activeMenu: location.hash.slice(1),
