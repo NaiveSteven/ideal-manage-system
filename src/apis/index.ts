@@ -4,6 +4,7 @@ import GoodApi from './GoodApi';
 import BrandApi from './BrandApi';
 import GoodsTypeApi from './GoodsType';
 import PermissionApi from './PermissionApi';
+import RoleApi from './RoleApi';
 
 export default {
     ...LoginApi,
@@ -12,4 +13,5 @@ export default {
     ...BrandApi,
     ...GoodsTypeApi,
     ...PermissionApi,
+    ...RoleApi,
 }

@@ -50,6 +50,14 @@ const routes = [
                 },
                 component: () => import('../pages/PermissionPage.vue')
             },
+            {
+                name: 'roleManage',
+                path: 'ideal/roleManage',
+                meta: {
+                    title: '角色管理'
+                },
+                component: () => import('../pages/RolePage.vue')
+            },
         ]
     },
     {
