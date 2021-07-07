@@ -24,15 +24,21 @@ export default {
         }
         return fmt;
     },
-    getListName(id: number, list: Ref) {
+    getListName(id: number, list: Ref | Array<{[index: string]: number}>, name = 'name') {
         let obj = {} as any;
-        obj = list.value.find((item: any) => {
-            return item.id === id;
-        });
+        if ((list as Ref).value){
+            obj = (list as Ref).value.find((item: any) => {
+                return item.id === id;
+            });
+        } else {
+            obj = (list as Array<{[index: string]: number}>).find((item: any) => {
+                return item.id === id;
+            });
+        }
         if (!obj || Object.keys(obj).length === 0) {
             return "";
         }
-        return obj.name;
+        return obj[name];
     },
     getListLabel(value: number, list: Array<{[index: string]: number}>) {
         let obj = {} as any;

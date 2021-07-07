@@ -1,8 +1,9 @@
 <template>
   <div>
     <el-dialog
-      :title="mode === 'add' ? '新增角色' : '编辑角色'"
       v-model="visible"
+      width="560px"
+      :title="mode === 'add' ? '新增角色' : '编辑角色'"
     >
       <el-form
         ref="form"
@@ -17,19 +18,35 @@
           <el-input
             type="textarea"
             v-model="dialogForm.remark"
-            :autosize="{minRows: 2, maxRows: 6}"
+            :autosize="{ minRows: 2, maxRows: 6 }"
             placeholder="请输入备注"
           />
         </el-form-item>
         <div>
-          <el-checkbox :indeterminate="isIndeterminate" v-model="isCheckAll" @change="handleCheckAllChange">全选</el-checkbox>
-          <template v-for="(permission, index) in newPermissionList" :key="index">
-              <div class="my-2 text-xl">{{permission.module_name}}</div>
-              <el-checkbox-group v-model="checkedPermissionList" @change="handleCheckedPermissionChange">
-                <el-checkbox v-for="(item, cIndex) in permission.arr" :label="item.id" :key="cIndex">{{item.label}}</el-checkbox>
-              </el-checkbox-group>
+          <el-checkbox
+            :indeterminate="isIndeterminate"
+            v-model="isCheckAll"
+            @change="handleCheckAllChange"
+            >全选</el-checkbox
+          >
+          <template
+            v-for="(permission, index) in newPermissionList"
+            :key="index"
+          >
+            <div class="my-2 text-xl">{{ permission.module_name }}</div>
+            <el-checkbox-group
+              v-model="checkedPermissionList"
+              @change="handleCheckedPermissionChange"
+            >
+              <el-checkbox
+                v-for="(item, cIndex) in permission.arr"
+                :label="item.id"
+                :key="cIndex"
+                >{{ item.label }}</el-checkbox
+              >
+            </el-checkbox-group>
           </template>
-        </div>         
+        </div>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -48,6 +65,7 @@
 <script>
 import { getCurrentInstance, reactive, ref, watch } from "vue";
 import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "../../const";
+import utils from "../../utils/utils";
 export default {
   name: "AddEditRoleDialog",
   props: {
@@ -64,6 +82,10 @@ export default {
       default: () => {},
     },
     permissionList: {
+      type: Array,
+      default: () => [],
+    },
+    moduleList: {
       type: Array,
       default: () => [],
     },
@@ -110,27 +132,33 @@ export default {
         const arr = [];
         const obj = [];
         newValue.forEach((permission) => {
+          permission.module_name = utils.getListName(
+            permission.moduleId,
+            props.moduleList,
+            "moduleName"
+          );
           obj[permission.module_name] = permission.module_name;
           permissionIdList.value.push(permission.id);
         });
+        console.log(newValue, "newValue");
         Object.keys(obj).forEach((item) => {
           arr.push({
             module_name: item,
             arr: [],
           });
-        })
+        });
         newValue.forEach((permission) => {
           arr.forEach((item) => {
             if (permission.module_name === item.module_name) {
               item.arr.push({
                 id: permission.id,
                 name: permission.name,
-                permission_type : permission.permission_type,
+                permission_type: permission.permission_type,
                 permission: permission.permission,
-                label: permission.name + ': ' + permission.permission,
-              })
+                label: permission.name + ": " + permission.permission,
+              });
             }
-          })
+          });
         });
         newPermissionList.value = arr;
       }
@@ -148,7 +176,7 @@ export default {
             const arr = [];
             props.curItem.permissionsID.forEach((item) => {
               arr.push(Number(item));
-            })
+            });
             checkedPermissionList.value = arr;
           });
         }
@@ -165,8 +193,9 @@ export default {
     const handleCheckedPermissionChange = (value) => {
       const checkedCount = value.length;
       isCheckAll.value = checkedCount === permissionIdList.value.length;
-      isIndeterminate.value = checkedCount > 0 && checkedCount < permissionIdList.value.length;
-    }
+      isIndeterminate.value =
+        checkedCount > 0 && checkedCount < permissionIdList.value.length;
+    };
 
     const handleReset = (form) => {
       ctx.$refs[form].resetFields();
@@ -190,7 +219,7 @@ export default {
     };
 
     const handleAdd = async () => {
-      console.log(checkedPermissionList,'11111');
+      console.log(checkedPermissionList, "11111");
       isBtnLoading.value = true;
       try {
         const ids = checkedPermissionList.value.join();

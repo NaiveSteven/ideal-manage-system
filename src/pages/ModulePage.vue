@@ -1,28 +1,17 @@
 <template>
   <div>
     <el-card>
-      <div class="mb-6 flex justify-between items-center">
-        <div>
-          <el-button type="primary" @click="handleCreate">新增</el-button>
-          <el-button
-            type="danger"
-            :disabled="checkedPermissionIds.length === 0"
-            @click="handleDel()"
-            >批量删除</el-button
-          >
-        </div>
-        <el-select
-          v-model="permissionForm.permission_type"
-          @change="handleQuery"
-          placeholder="请选择类型"
+      <div class="mb-6">
+        <el-button type="primary" @click="handleCreate">新增</el-button>
+        <el-button
+          type="danger"
+          :disabled="checkedBrandIds.length === 0"
+          @click="handleDel()"
+          >批量删除</el-button
         >
-          <template v-for="item in permissionTypeList" :key="item.value">
-            <el-option :value="item.value" :label="item.label"></el-option>
-          </template>
-        </el-select>
       </div>
       <el-table
-        :data="permissionList"
+        :data="brandList"
         @selection-change="handleSelectionChange"
         v-loading="isTableLoading"
       >
@@ -42,9 +31,9 @@
           <template #header>
             <el-input
               size="mini"
-              v-model="permissionForm.keyword"
-              @change="getPermissionList"
-              placeholder="请输入权限点名"
+              v-model="moduleForm.keyword"
+              @change="getModuleList"
+              placeholder="请输入模块名"
             />
           </template>
           <template #default="scope">
@@ -65,11 +54,11 @@
         :page-size="pager.limit"
         @current-change="handleCurrentChange"
       />
-      <AddEditPermissionDialog
+      <AddEditModuleDialog
         :curItem="curItem"
         :mode="dialogMode"
         v-model="isShowAEDialog"
-        @updateList="getPermissionList"
+        @updateList="getModuleList"
       />
       <DelDialog
         v-model="isShowDelDialog"
@@ -81,7 +70,7 @@
   </div>
 </template>
 <script>
-import AddEditPermissionDialog from "../components/Permission/AddEditPermissionDialog.vue";
+import AddEditModuleDialog from "../components/module/AddEditModuleDialog.vue";
 import DelDialog from "../components/common/DelDialog.vue";
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 import {
@@ -89,17 +78,15 @@ import {
   DIALOG_MODE_EDIT,
   DEL_DIALOG_SINGLE,
   DEL_DIALOG_MULTIPLE,
-  PERMISSION_TYPE_LIST,
 } from "../const";
-import utils from "./../utils/utils";
+import utils from "../utils/utils";
 export default {
-  name: "PermissionPage",
-  components: { DelDialog, AddEditPermissionDialog },
+  name: "ModulePage",
+  components: { DelDialog, AddEditModuleDialog },
   setup() {
     const { ctx } = getCurrentInstance();
-    const checkedPermissionIds = ref([]);
-    const permissionList = ref([]);
-    const moduleList = ref([]);
+    const checkedBrandIds = ref([]);
+    const brandList = ref([]);
     const contents = ref([]);
     const isTableLoading = ref(false);
     const isShowAEDialog = ref(false);
@@ -107,11 +94,9 @@ export default {
     const isShowDelDialog = ref(false);
     const dialogMode = ref(DIALOG_MODE_ADD);
     const delMode = ref(DEL_DIALOG_MULTIPLE);
-    const permissionTypeList = ref(PERMISSION_TYPE_LIST);
     const curItem = ref({});
-    const permissionForm = reactive({
+    const moduleForm = reactive({
       keyword: "",
-      permission_type: 0,
     });
     const pager = reactive({
       page: 1,
@@ -120,37 +105,19 @@ export default {
     });
     const columns = reactive([
       {
-        label: "名称",
-        prop: "name",
-        minWidth: "110",
+        label: "模块名",
+        prop: "moduleName",
+        minWidth: 120,
       },
       {
-        label: "permission",
-        prop: "permission",
-        minWidth: "110",
-        showOverflowTooltip: true,
-      },
-      {
-        label: "权限点类别",
-        prop: "permission_type",
-        minWidth: "110",
-        formatter(row, column, value) {
-          return utils.getListLabel(value, PERMISSION_TYPE_LIST);
-        },
-      },
-      {
-        label: "所属模块名",
-        prop: "moduleId",
-        minWidth: "110",
-        showOverflowTooltip: true,
-        formatter(row, column, value) {
-          return utils.getListName(value, moduleList, 'moduleName');
-        },
+        label: "备注",
+        prop: "remark",
+        minWidth: 120,
       },
       {
         label: "创建时间",
         prop: "createdAt",
-        width: "150",
+        minWidth: 150,
         formatter: (row, column, value) => {
           return utils.formateDate(new Date(value));
         },
@@ -159,33 +126,19 @@ export default {
 
     onMounted(() => {
       getModuleList();
-      getPermissionList();
     });
 
     const getModuleList = async () => {
-      try {
-        const params = {
-          page: 1,
-          limit: 1000,
-        };
-        const { rows } = await ctx.$api.getModuleList(params);
-        moduleList.value = rows;
-      } catch (error) {
-        ctx.$message.error(error.msg || error);
-      }
-    };
-
-    const getPermissionList = async () => {
       isTableLoading.value = true;
       try {
         const params = { ...pager };
-        Object.keys(permissionForm).forEach((item) => {
-          if (permissionForm[item]) {
-            params[item] = permissionForm[item];
+        Object.keys(moduleForm).forEach((item) => {
+          if (moduleForm[item]) {
+            params[item] = moduleForm[item];
           }
         });
-        const { count, rows } = await ctx.$api.getPermissionList(params);
-        permissionList.value = rows;
+        const { count, rows } = await ctx.$api.getModuleList(params);
+        brandList.value = rows;
         pager.total = count;
       } catch (error) {
         ctx.$message.error(error.msg || error);
@@ -193,14 +146,14 @@ export default {
       isTableLoading.value = false;
     };
 
-    const deletePermission = async (ids) => {
+    const deleteBrand = async (ids) => {
       isDelBtnLoading.value = true;
       try {
-        await ctx.$api.deletePermission({ id: ids });
+        await ctx.$api.deleteModule({ id: ids });
         ctx.$message.success("删除成功");
         isDelBtnLoading.value = false;
         isShowDelDialog.value = false;
-        getPermissionList();
+        getModuleList();
       } catch (error) {
         ctx.$message.error(error.msg || error);
       }
@@ -209,9 +162,9 @@ export default {
 
     const handleDelConfirm = () => {
       if (delMode.value === DEL_DIALOG_SINGLE) {
-        deletePermission([curItem.value.id]);
+        deleteBrand([curItem.value.id]);
       } else {
-        deletePermission(checkedPermissionIds.value);
+        deleteBrand(checkedBrandIds.value);
       }
     };
 
@@ -228,7 +181,7 @@ export default {
       list.map((item) => {
         arr.push(item.id);
       });
-      checkedPermissionIds.value = arr;
+      checkedBrandIds.value = arr;
     };
 
     const handleCreate = () => {
@@ -244,17 +197,17 @@ export default {
 
     const handleQuery = () => {
       pager.page = 1;
-      getPermissionList();
+      getModuleList();
     };
 
     const handleReset = (form) => {
       ctx.$refs[form].resetFields();
-      getPermissionList();
+      getModuleList();
     };
 
     const handleCurrentChange = (current) => {
       pager.page = current;
-      getPermissionList();
+      getModuleList();
     };
 
     return {
@@ -263,12 +216,12 @@ export default {
       curItem,
       isShowAEDialog,
       isTableLoading,
-      permissionList,
-      permissionForm,
+      brandList,
+      moduleForm,
       columns,
       pager,
-      checkedPermissionIds,
-      getPermissionList,
+      checkedBrandIds,
+      getModuleList,
       handleQuery,
       handleReset,
       handleCurrentChange,
@@ -277,11 +230,10 @@ export default {
       handleEdit,
       handleSelectionChange,
       handleCreate,
-      deletePermission,
+      deleteBrand,
       isDelBtnLoading,
       isShowDelDialog,
       contents,
-      permissionTypeList,
     };
   },
 };

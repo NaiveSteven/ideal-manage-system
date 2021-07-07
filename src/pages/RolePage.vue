@@ -58,6 +58,7 @@
         :curItem="curItem"
         :mode="dialogMode"
         :permissionList="permissionList"
+        :moduleList="moduleList"
         v-model="isShowAEDialog"
         @updateList="getRoleList"
       />
@@ -90,6 +91,7 @@ export default {
     const roleList = ref([]);
     const contents = ref([]);
     const permissionList = ref([]);
+    const moduleList = ref([]);
     const isTableLoading = ref(false);
     const isShowAEDialog = ref(false);
     const isDelBtnLoading = ref(false);
@@ -136,9 +138,23 @@ export default {
     ]);
 
     onMounted(() => {
+      getModuleList();
       getRoleList();
       getPermissionList();
     });
+
+    const getModuleList = async () => {
+      try {
+        const params = {
+          page: 1,
+          limit: 1000,
+        };
+        const { rows } = await ctx.$api.getModuleList(params);
+        moduleList.value = rows;
+      } catch (error) {
+        ctx.$message.error(error.msg || error);
+      }
+    };
 
     const getRoleList = async () => {
       isTableLoading.value = true;
@@ -264,6 +280,8 @@ export default {
       pager,
       checkedRoleIds,
       permissionList,
+      moduleList,
+      getModuleList,
       getRoleList,
       getPermissionList,
       getPermission,

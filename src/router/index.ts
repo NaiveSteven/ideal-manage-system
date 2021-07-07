@@ -43,6 +43,14 @@ const routes = [
                 component: () => import('../pages/BrandPage.vue')
             },
             {
+                name: 'moduleManage',
+                path: 'ideal/moduleManage',
+                meta: {
+                    title: '模块管理'
+                },
+                component: () => import('../pages/ModulePage.vue')
+            },
+            {
                 name: 'permissionManage',
                 path: 'ideal/permissionManage',
                 meta: {

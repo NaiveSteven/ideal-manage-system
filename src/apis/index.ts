@@ -5,6 +5,7 @@ import BrandApi from './BrandApi';
 import GoodsTypeApi from './GoodsType';
 import PermissionApi from './PermissionApi';
 import RoleApi from './RoleApi';
+import ModuleApi from './ModuleApi';
 
 export default {
     ...LoginApi,
@@ -14,4 +15,5 @@ export default {
     ...GoodsTypeApi,
     ...PermissionApi,
     ...RoleApi,
+    ...ModuleApi,
 }

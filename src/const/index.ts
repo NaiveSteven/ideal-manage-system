@@ -47,6 +47,13 @@ export const MENU_DATA: MenuItem[] = [
         path: '/permission',
         children: [
             {
+                menuName: '模块管理',
+                name: 'module-manage',
+                icon: 'el-icon-film',
+                permission: 'menu.permission-module',
+                path: '/ideal/moduleManage',
+            },
+            {
                 menuName: '权限点管理',
                 name: 'point-manage',
                 icon: 'el-icon-lollipop',
