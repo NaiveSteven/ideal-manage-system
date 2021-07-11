@@ -1,4 +1,10 @@
 import { Ref } from 'vue';
+
+interface TreeListItem {
+    id: number;
+    pid: number[];
+    children: TreeListItem[];
+}
 /**
  * 工具函数封装
  */
@@ -24,14 +30,14 @@ export default {
         }
         return fmt;
     },
-    getListName(id: number, list: Ref | Array<{[index: string]: number}>, name = 'name') {
+    getListName(id: number, list: Ref | Array<{ [index: string]: number }>, name = 'name') {
         let obj = {} as any;
-        if ((list as Ref).value){
+        if ((list as Ref).value) {
             obj = (list as Ref).value.find((item: any) => {
                 return item.id === id;
             });
         } else {
-            obj = (list as Array<{[index: string]: number}>).find((item: any) => {
+            obj = (list as Array<{ [index: string]: number }>).find((item: any) => {
                 return item.id === id;
             });
         }
@@ -40,7 +46,7 @@ export default {
         }
         return obj[name];
     },
-    getListLabel(value: number, list: Array<{[index: string]: number}>) {
+    getListLabel(value: number, list: Array<{ [index: string]: number }>) {
         let obj = {} as any;
         obj = list.find((item: any) => {
             return item.value === value;
@@ -49,5 +55,22 @@ export default {
             return "";
         }
         return obj.label;
+    },
+    // 找到树结构当前项
+    getTreeListItem(id: number, list: TreeListItem[]) {
+        let selectedItem = {} as TreeListItem;
+
+        const getItem = (id: number, list: TreeListItem[]) => {
+          list.forEach((item) => {
+            if (item.id === id) {
+              selectedItem = item;
+            }
+            if (!selectedItem.id && item.children && item.children.length > 0) {
+              getItem(id, item.children);
+            }
+          })
+        }
+        getItem(id, list)
+        return selectedItem;
     }
 }

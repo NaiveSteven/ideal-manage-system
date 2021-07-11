@@ -21,14 +21,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="商品类别" prop="goodsTypeId" label-width="100px">
-          <el-select
+          <el-cascader
+            v-model="dialogForm.goodsTypeId"
+            :options="goodsTypeList"
+            placeholder="请选择商品类别"
+          />
+          <!-- <el-select
             v-model="dialogForm.goodsTypeId"
             placeholder="请选择商品类别"
           >
             <template v-for="item in goodsTypeList" :key="item.value">
               <el-option :value="item.id" :label="item.name"></el-option>
             </template>
-          </el-select>
+          </el-select> -->
         </el-form-item>
         <el-form-item label="图片地址" prop="imageUrl" label-width="100px">
           <el-input
@@ -82,8 +87,8 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance, reactive, ref, toRaw, watch } from "vue";
-import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "../../const";
+import { getCurrentInstance, reactive, ref, toRaw, watch } from "vue"
+import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "../../const"
 export default {
   name: "AddEditGoodsDialog",
   props: {
@@ -109,14 +114,14 @@ export default {
     },
   },
   setup(props, { emit }) {
-    const { ctx } = getCurrentInstance();
-    const visible = ref(false);
-    const isBtnLoading = ref(false);
-    const goodStateList = ref(GOOD_STATE);
+    const { ctx } = getCurrentInstance()
+    const visible = ref(false)
+    const isBtnLoading = ref(false)
+    const goodStateList = ref(GOOD_STATE)
     const dialogForm = reactive({
       id: "",
       name: "",
-      goodsTypeId: "",
+      goodsTypeId: [],
       brandId: "",
       desc: "",
       price: 0,
@@ -126,7 +131,7 @@ export default {
       saleNum: 0,
       state: 1,
       imageUrl: "",
-    });
+    })
     const dialogFormRules = reactive({
       name: [
         {
@@ -194,75 +199,84 @@ export default {
           trigger: "change",
         },
       ],
-    });
+    })
 
     watch(
       () => props.modelValue,
       (newValue) => {
-        visible.value = newValue;
+        visible.value = newValue
       }
-    );
+    )
 
     watch(visible, (newValue) => {
       if (!newValue) {
-        handleReset("form");
+        handleReset("form")
       } else {
         if (props.mode === DIALOG_MODE_EDIT) {
           ctx.$nextTick(() => {
-            Object.assign(dialogForm, props.curItem);
-          });
+            Object.assign(dialogForm, props.curItem)
+          })
         }
       }
-      emit("update:modelValue", newValue);
-    });
+      emit("update:modelValue", newValue)
+    })
 
     const handleReset = (form) => {
-      ctx.$refs[form].resetFields();
-    };
+      ctx.$refs[form].resetFields()
+    }
 
     const handleClose = () => {
-      visible.value = false;
-      handleReset("form");
-    };
+      visible.value = false
+      handleReset("form")
+    }
 
     const handleSubmit = () => {
       ctx.$refs.form.validate(async (valid) => {
         if (valid) {
           if (props.mode === DIALOG_MODE_ADD) {
-            handleAdd();
+            handleAdd()
           } else {
-            handleUpdate();
+            handleUpdate()
           }
         }
-      });
-    };
+      })
+    }
 
     const handleAdd = async () => {
-      isBtnLoading.value = true;
+      isBtnLoading.value = true
       try {
-        await ctx.$api.addGoods(dialogForm);
-        visible.value = false;
-        ctx.$message.success("创建成功");
-        emit("updateList");
+        const params = {
+          ...dialogForm,
+        }
+        params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
+        await ctx.$api.addGoods(params)
+        visible.value = false
+        ctx.$message.success("创建成功")
+        emit("updateList")
       } catch (error) {
-        ctx.$message(error.msg || error);
+        ctx.$message(error.msg || error)
       }
-      isBtnLoading.value = false;
-    };
+      isBtnLoading.value = false
+    }
 
     const handleUpdate = async () => {
-      isBtnLoading.value = true;
+      isBtnLoading.value = true
       try {
-        const params = { ...dialogForm, id: props.curItem.id };
-        await ctx.$api.updateGoods(params);
-        visible.value = false;
-        ctx.$message.success("编辑成功");
-        emit("updateList");
+        const params = { ...dialogForm, id: props.curItem.id }
+        params.goodsTypeId =
+          typeof dialogForm.goodsTypeId === "number"
+            ? dialogForm.goodsTypeId
+            : dialogForm.goodsTypeId.slice().pop()
+        await ctx.$api.updateGoods(params)
+        visible.value = false
+        ctx.$message.success("编辑成功")
+        emit("updateList")
       } catch (error) {
-        ctx.$message(error.msg || error);
+        console.log(error, "error")
+        ctx.$message(error.msg || error)
       }
-      isBtnLoading.value = false;
-    };
+      isBtnLoading.value = false
+    }
 
     return {
       isBtnLoading,
@@ -274,9 +288,9 @@ export default {
       handleClose,
       handleSubmit,
       handleUpdate,
-    };
+    }
   },
-};
+}
 </script>
 
 <style lang="scss"></style>

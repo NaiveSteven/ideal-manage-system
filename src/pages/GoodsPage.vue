@@ -17,14 +17,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="商品类别" prop="goodsTypeId" label-width="80px">
-          <el-select
+          <el-cascader
+            v-model="goodsForm.goodsTypeId"
+            :options="goodsTypeList"
+            placeholder="请选择商品类别"
+          />
+          <!-- <el-select
             v-model="goodsForm.goodsTypeId"
             placeholder="请选择商品类别"
           >
             <template v-for="item in goodsTypeList" :key="item.value">
               <el-option :value="item.id" :label="item.name"></el-option>
             </template>
-          </el-select>
+          </el-select> -->
         </el-form-item>
         <el-form-item label="商品状态" prop="state" label-width="80px">
           <el-select v-model="goodsForm.state">
@@ -127,46 +132,46 @@
   </div>
 </template>
 <script>
-import AddEditGoodsDialog from "../components/goods/AddEditGoodsDialog.vue";
-import DelDialog from "../components/common/DelDialog.vue";
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+import AddEditGoodsDialog from "../components/goods/AddEditGoodsDialog.vue"
+import DelDialog from "../components/common/DelDialog.vue"
+import { getCurrentInstance, onMounted, reactive, ref } from "vue"
 import {
   GOOD_STATE,
   DIALOG_MODE_ADD,
   DIALOG_MODE_EDIT,
   DEL_DIALOG_SINGLE,
   DEL_DIALOG_MULTIPLE,
-} from "../const";
-import utils from "./../utils/utils";
+} from "../const"
+import utils from "./../utils/utils"
 export default {
   name: "GoodsPage",
   components: { AddEditGoodsDialog, DelDialog },
   setup() {
-    const { ctx } = getCurrentInstance();
-    const goodStateList = ref(GOOD_STATE);
-    const checkedGoodsIds = ref([]);
-    const goodsTypeList = ref([]);
-    const brandList = ref([]);
-    const goodsList = ref([]);
-    const contents = ref([]);
-    const isTableLoading = ref(false);
-    const isShowAEDialog = ref(false);
-    const isDelBtnLoading = ref(false);
-    const isShowDelDialog = ref(false);
-    const dialogMode = ref(DIALOG_MODE_ADD);
-    const delMode = ref(DEL_DIALOG_MULTIPLE);
-    const curItem = ref({});
+    const { ctx } = getCurrentInstance()
+    const goodStateList = ref(GOOD_STATE)
+    const checkedGoodsIds = ref([])
+    const goodsTypeList = ref([])
+    const brandList = ref([])
+    const goodsList = ref([])
+    const contents = ref([])
+    const isTableLoading = ref(false)
+    const isShowAEDialog = ref(false)
+    const isDelBtnLoading = ref(false)
+    const isShowDelDialog = ref(false)
+    const dialogMode = ref(DIALOG_MODE_ADD)
+    const delMode = ref(DEL_DIALOG_MULTIPLE)
+    const curItem = ref({})
     const goodsForm = reactive({
       keyword: "",
       brandId: "",
-      goodsTypeId: "",
+      goodsTypeId: [],
       state: 0,
-    });
+    })
     const pager = reactive({
       page: 1,
       limit: 10,
       total: 10,
-    });
+    })
     const columns = reactive([
       {
         label: "商品类别",
@@ -174,7 +179,7 @@ export default {
         width: 100,
         showOverflowTooltip: true,
         formatter(row, column, value) {
-          return utils.getListName(value, goodsTypeList);
+          return (utils.getTreeListItem(value, goodsTypeList.value)).name;
         },
       },
       {
@@ -183,7 +188,7 @@ export default {
         width: 100,
         showOverflowTooltip: true,
         formatter(row, column, value) {
-          return utils.getListName(value, brandList);
+          return utils.getListName(value, brandList)
         },
       },
       {
@@ -220,7 +225,7 @@ export default {
             1: "在售",
             2: "下架",
             3: "售罄",
-          }[value];
+          }[value]
         },
       },
 
@@ -229,124 +234,136 @@ export default {
         prop: "createdAt",
         width: 150,
         formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value));
+          return utils.formateDate(new Date(value))
         },
       },
-    ]);
+    ])
 
     onMounted(() => {
-      getGoodsList();
-      getBrandList();
-      getGoodsTypeList();
-    });
+      getGoodsList()
+      getBrandList()
+      getGoodsTypeList()
+    })
 
     const getGoodsList = async () => {
-      isTableLoading.value = true;
+      isTableLoading.value = true
       try {
-        const params = { ...pager };
+        const params = { ...pager }
         Object.keys(goodsForm).forEach((item) => {
           if (goodsForm[item]) {
-            params[item] = goodsForm[item];
+            params[item] = goodsForm[item]
           }
-        });
-        const { count, rows } = await ctx.$api.getGoodsList(params);
-        goodsList.value = rows;
-        pager.total = count;
+        })
+        params.goodsTypeId = goodsForm.goodsTypeId.slice().pop();
+        const { count, rows } = await ctx.$api.getGoodsList(params)
+        goodsList.value = rows
+        pager.total = count
       } catch (error) {
-        ctx.$message.error(error.msg || error);
+        ctx.$message.error(error.msg || error)
       }
-      isTableLoading.value = false;
-    };
+      isTableLoading.value = false
+    }
 
     const getBrandList = async () => {
       try {
         const params = {
           page: 1,
           limit: 1000,
-        };
-        const { rows } = await ctx.$api.getBrandList(params);
-        brandList.value = rows;
+        }
+        const { rows } = await ctx.$api.getBrandList(params)
+        brandList.value = rows
       } catch (error) {
-        ctx.$message(error.msg || error);
+        ctx.$message(error.msg || error)
       }
-    };
+    }
 
     const getGoodsTypeList = async () => {
       try {
         const params = {
           page: 1,
           limit: 1000,
-        };
-        const { rows } = await ctx.$api.getGoodsTypeList(params);
+        }
+        const { rows } = await ctx.$api.getGoodsTypeList(params)
         goodsTypeList.value = rows;
+        modifyLabelValue(goodsTypeList.value)
       } catch (error) {
-        ctx.$message(error.msg || error);
+        ctx.$message(error.msg || error)
       }
-    };
+    }
 
     const deleteGoods = async (ids) => {
-      isDelBtnLoading.value = true;
+      isDelBtnLoading.value = true
       try {
-        await ctx.$api.deleteGoods({ id: ids });
-        ctx.$message.success("删除成功");
-        isDelBtnLoading.value = false;
-        isShowDelDialog.value = false;
-        getGoodsList();
+        await ctx.$api.deleteGoods({ id: ids })
+        ctx.$message.success("删除成功")
+        isDelBtnLoading.value = false
+        isShowDelDialog.value = false
+        getGoodsList()
       } catch (error) {
-        ctx.$message.error(error.msg || error);
+        ctx.$message.error(error.msg || error)
       }
-      isDelBtnLoading.value = false;
-    };
+      isDelBtnLoading.value = false
+    }
 
     const handleDelConfirm = () => {
       if (delMode.value === DEL_DIALOG_SINGLE) {
-        deleteGoods([curItem.value.id]);
+        deleteGoods([curItem.value.id])
       } else {
-        deleteGoods(checkedGoodsIds.value);
+        deleteGoods(checkedGoodsIds.value)
       }
-    };
+    }
 
     const handleDel = (row) => {
-      delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE;
-      isShowDelDialog.value = true;
+      delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
+      isShowDelDialog.value = true
       if (row) {
-        curItem.value = row;
+        curItem.value = row
       }
-    };
+    }
 
     const handleSelectionChange = (list) => {
-      const arr = [];
+      const arr = []
       list.map((item) => {
-        arr.push(item.id);
-      });
-      checkedGoodsIds.value = arr;
-    };
+        arr.push(item.id)
+      })
+      checkedGoodsIds.value = arr
+    }
 
     const handleCreate = () => {
-      dialogMode.value = DIALOG_MODE_ADD;
-      isShowAEDialog.value = true;
-    };
+      dialogMode.value = DIALOG_MODE_ADD
+      isShowAEDialog.value = true
+    }
 
     const handleEdit = (row) => {
-      dialogMode.value = DIALOG_MODE_EDIT;
-      curItem.value = row;
-      isShowAEDialog.value = true;
-    };
+      dialogMode.value = DIALOG_MODE_EDIT
+      curItem.value = row
+      isShowAEDialog.value = true
+    }
 
     const handleQuery = () => {
-      pager.page = 1;
-      getGoodsList();
-    };
+      pager.page = 1
+      getGoodsList()
+    }
 
     const handleReset = (form) => {
-      ctx.$refs[form].resetFields();
-      getGoodsList();
-    };
+      ctx.$refs[form].resetFields()
+      getGoodsList()
+    }
 
     const handleCurrentChange = (current) => {
-      pager.page = current;
-      getGoodsList();
-    };
+      pager.page = current
+      getGoodsList()
+    }
+
+    const modifyLabelValue = (list) => {
+      list.forEach((item) => {
+        item.label = item.name
+        item.value = item.id
+        if (item.children) {
+          modifyLabelValue(item.children)
+        }
+      })
+    }
 
     return {
       delMode,
@@ -377,9 +394,9 @@ export default {
       isDelBtnLoading,
       isShowDelDialog,
       contents,
-    };
+    }
   },
-};
+}
 </script>
 
 <style lang="scss"></style>
