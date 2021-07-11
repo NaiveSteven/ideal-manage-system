@@ -31,14 +31,6 @@
         >
         </el-table-column>
         <el-table-column label="操作" width="150">
-          <template #header>
-            <el-input
-              size="mini"
-              v-model="goodsTypeForm.keyword"
-              @change="getGoodsTypeList"
-              placeholder="请输入品牌名"
-            />
-          </template>
           <template #default="scope">
             <el-button type="text" @click="handleEdit(scope.row)" size="mini"
               >编辑</el-button
@@ -49,14 +41,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
+      <!-- <el-pagination
         class="text-right mt-6"
         background
         layout="prev, pager, next"
         :total="pager.total"
         :page-size="pager.limit"
         @current-change="handleCurrentChange"
-      />
+      /> -->
       <AddEditGoodsTypeDialog
         :curItem="curItem"
         :mode="dialogMode"
@@ -131,16 +123,18 @@ export default {
     const getGoodsTypeList = async () => {
       isTableLoading.value = true
       try {
-        const params = { ...pager }
+        const params = { 
+          page: 1,
+          limit: 1000
+        }
         Object.keys(goodsTypeForm).forEach((item) => {
           if (goodsTypeForm[item]) {
             params[item] = goodsTypeForm[item]
           }
         })
-        const { count, rows } = await ctx.$api.getGoodsTypeList(params)
+        const { rows } = await ctx.$api.getGoodsTypeList(params)
         goodsTypeList.value = rows
         modifyLabelValue(goodsTypeList.value);
-        pager.total = count
       } catch (error) {
         ctx.$message.error(error.msg || error)
       }

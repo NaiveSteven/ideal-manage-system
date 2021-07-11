@@ -147,11 +147,18 @@ export default {
     }
 
     const handleUpdate = async () => {
+      if (dialogForm.pid === props.curItem.id) {
+        ctx.$message.warning("请勿选择自己")
+        return
+      }
       isBtnLoading.value = true
       try {
         const params = {
           name: dialogForm.name,
-          pid: dialogForm.pid.slice().pop(),
+          pid:
+            typeof dialogForm.pid === "number"
+              ? dialogForm.pid
+              : dialogForm.pid.slice().pop(),
           id: props.curItem.id,
         }
         await ctx.$api.updateGoodsType(params)
@@ -159,6 +166,7 @@ export default {
         ctx.$message.success("编辑成功")
         emit("updateList")
       } catch (error) {
+        console.log(error, "error")
         ctx.$message(error.msg || error)
       }
       isBtnLoading.value = false
