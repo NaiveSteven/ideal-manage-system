@@ -10,10 +10,10 @@
         label-width="100px"
         :rules="dialogFormRules"
       >
-        <el-form-item label="模块名" prop="moduleName">
+        <el-form-item label="模块名" prop="moduleName" label-width="100px">
           <el-input v-model="dialogForm.moduleName" placeholder="请输入模块名" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <el-form-item label="备注" prop="remark" label-width="100px">
           <el-input v-model="dialogForm.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
       </el-form>

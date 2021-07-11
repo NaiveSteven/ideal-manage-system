@@ -10,7 +10,7 @@
         label-width="100px"
         :rules="dialogFormRules"
       >
-        <el-form-item label="品牌名" prop="name">
+        <el-form-item label="品牌名" prop="name" label-width="100px">
           <el-input v-model="dialogForm.name" placeholder="请输入商品名称" />
         </el-form-item>
       </el-form>

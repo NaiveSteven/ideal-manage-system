@@ -81,7 +81,7 @@
   </div>
 </template>
 <script>
-import AddEditPermissionDialog from "../components/Permission/AddEditPermissionDialog.vue";
+import AddEditPermissionDialog from "../components/permission/AddEditPermissionDialog.vue";
 import DelDialog from "../components/common/DelDialog.vue";
 import { getCurrentInstance, onMounted, reactive, ref } from "vue";
 import {

@@ -2,21 +2,21 @@
   <div>
     <el-card class="mb-6">
       <el-form ref="form" :model="goodsForm" label-width="80px">
-        <el-form-item label="商品名" prop="keyword">
+        <el-form-item label="商品名" prop="keyword" label-width="80px">
           <el-input
             class="w-1/4"
             v-model="goodsForm.keyword"
             placeholder="请输入商品名"
           />
         </el-form-item>
-        <el-form-item label="品牌" prop="brandId">
+        <el-form-item label="品牌" prop="brandId" label-width="80px">
           <el-select v-model="goodsForm.brandId" placeholder="请选择商品品牌">
             <template v-for="item in brandList" :key="item.value">
               <el-option :value="item.id" :label="item.name"></el-option>
             </template>
           </el-select>
         </el-form-item>
-        <el-form-item label="商品类别" prop="goodsTypeId">
+        <el-form-item label="商品类别" prop="goodsTypeId" label-width="80px">
           <el-select
             v-model="goodsForm.goodsTypeId"
             placeholder="请选择商品类别"
@@ -26,14 +26,14 @@
             </template>
           </el-select>
         </el-form-item>
-        <el-form-item label="商品状态" prop="state">
+        <el-form-item label="商品状态" prop="state" label-width="80px">
           <el-select v-model="goodsForm.state">
             <template v-for="item in goodStateList" :key="item.value">
               <el-option :value="item.value" :label="item.label"></el-option>
             </template>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label-width="80px">
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>

@@ -11,10 +11,10 @@
         label-width="100px"
         :rules="dialogFormRules"
       >
-        <el-form-item label="角色名" prop="name">
+        <el-form-item label="角色名" prop="name" label-width="100px">
           <el-input v-model="dialogForm.name" placeholder="请输入角色名" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <el-form-item label="备注" prop="remark" label-width="100px">
           <el-input
             type="textarea"
             v-model="dialogForm.remark"

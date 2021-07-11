@@ -10,23 +10,23 @@
         label-width="100px"
         :rules="dialogFormRules"
       >
-        <el-form-item label="名称" prop="name">
+        <el-form-item label="名称" prop="name" label-width="100px">
           <el-input v-model="dialogForm.name" placeholder="请输入名称" />
         </el-form-item>
-        <el-form-item label="权限点" prop="permission">
+        <el-form-item label="权限点" prop="permission" label-width="100px">
           <el-input
             v-model="dialogForm.permission"
             placeholder="请输入权限点"
           />
         </el-form-item>
-        <el-form-item label="权限点类型" prop="permission_type">
+        <el-form-item label="权限点类型" prop="permission_type" label-width="100px">
           <el-radio-group v-model="dialogForm.permission_type">
             <el-radio :label="1">菜单</el-radio>
             <el-radio :label="2">按钮</el-radio>
             <el-radio :label="3">数据</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="所属模块名" prop="module_name">
+        <el-form-item label="所属模块名" prop="module_name" label-width="100px">
           <el-input
             v-model="dialogForm.module_name"
             placeholder="请输入模块名称"
