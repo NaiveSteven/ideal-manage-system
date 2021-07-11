@@ -66,6 +66,14 @@ const routes = [
                 },
                 component: () => import('../pages/RolePage.vue')
             },
+            {
+                name: 'goodsTypeMange',
+                path: 'ideal/goodsTypeManage',
+                meta: {
+                    title: '商品类别管理'
+                },
+                component: () => import('../pages/GoodsTypePage.vue')
+            },
         ]
     },
     {

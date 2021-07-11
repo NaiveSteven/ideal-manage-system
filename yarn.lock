@@ -467,10 +467,10 @@ electron-to-chromium@^1.3.723:
   resolved "https://npm.oneitfarm.com/electron-to-chromium/-/electron-to-chromium-1.3.740.tgz#e38b7d2b848f632191b643e6dabca51be2162922"
   integrity sha1-44t9K4SPYyGRtkPm2rylG+IWKSI=
 
-element-plus@^1.0.2-beta.44:
-  version "1.0.2-beta.44"
-  resolved "https://npm.oneitfarm.com/element-plus/-/element-plus-1.0.2-beta.44.tgz#7aff122e6181088223027adb65a4a8321e1ef4e9"
-  integrity sha1-ev8SLmGBCIIjAnrbZaSoMh4e9Ok=
+element-plus@^1.0.2-beta.55:
+  version "1.0.2-beta.55"
+  resolved "https://npm.oneitfarm.com/element-plus/-/element-plus-1.0.2-beta.55.tgz#d95886649560c4edf21568e6d4a822e4c74fcdd0"
+  integrity sha1-2ViGZJVgxO3yFWjm1Kgi5MdPzdA=
   dependencies:
     "@popperjs/core" "^2.4.4"
     "@types/lodash" "^4.14.161"
