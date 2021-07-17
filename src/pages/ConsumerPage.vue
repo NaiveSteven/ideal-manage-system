@@ -4,6 +4,7 @@
       <el-table class="w-full" :data="userList" v-loading="isTableLoading" body>
         <el-table-column
           v-for="item in columns"
+          align="center"
           :key="item.prop"
           :prop="item.prop"
           :label="item.label"
@@ -12,7 +13,7 @@
           :formatter="item.formatter"
         >
         </el-table-column>
-        <el-table-column label="操作" width="150">
+        <el-table-column label="操作" width="140" align="center">
           <template #header>
             <el-input
               size="mini"
@@ -22,11 +23,8 @@
             />
           </template>
           <template #default="scope">
-            <el-button type="text" @click="handleEdit(scope.row)" size="mini"
-              >编辑</el-button
-            >
-            <el-button type="text" size="mini" @click="handleDel(scope.row)"
-              >删除</el-button
+            <el-button type="text" @click="handleDetail(scope.row)" size="mini"
+              >详情</el-button
             >
           </template>
         </el-table-column>
@@ -43,23 +41,23 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
-import utils from "../utils/utils";
-import { ElMessage } from "element-plus";
+import { getCurrentInstance, onMounted, reactive, ref } from "vue"
+import utils from "../utils/utils"
+import { ElMessage } from "element-plus"
 export default {
   name: "ConsumerPage",
   setup() {
-    const { ctx } = getCurrentInstance();
-    const userList = ref([]);
+    const { ctx } = getCurrentInstance()
+    const userList = ref([])
     const pager = reactive({
       page: 1,
       limit: 10,
       total: 10,
-    });
+    })
     const formData = reactive({
       keyword: "",
-    });
-    const isTableLoading = ref(false);
+    })
+    const isTableLoading = ref(false)
     // 定义动态表格-格式
     const columns = reactive([
       {
@@ -77,33 +75,37 @@ export default {
         prop: "createdAt",
         width: 180,
         formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value));
+          return utils.formateDate(new Date(value))
         },
       },
-    ]);
+    ])
     // 初始化接口调用
     onMounted(() => {
-      getUserList();
-    });
+      getUserList()
+    })
     // 获取用户列表
     const getUserList = async () => {
-      isTableLoading.value = true;
-      const params = { keyword: formData.keyword, ...pager };
+      isTableLoading.value = true
+      const params = { keyword: formData.keyword, ...pager }
       try {
-        const { count, rows } = await ctx.$api.getUserList(params);
-        userList.value = rows;
-        pager.total = count;
+        const { count, rows } = await ctx.$api.getUserList(params)
+        userList.value = rows
+        pager.total = count
       } catch (error) {
-        console.log(error);
-        ElMessage.error(error.msg || error);
+        console.log(error)
+        ElMessage.error(error.msg || error)
       }
-      isTableLoading.value = false;
-    };
+      isTableLoading.value = false
+    }
     // 分页事件处理
     const handleCurrentChange = (current) => {
-      pager.page = current;
-      getUserList();
-    };
+      pager.page = current
+      getUserList()
+    }
+
+    const handleDetail = (row) => {
+      return row
+    }
 
     return {
       isTableLoading,
@@ -113,9 +115,10 @@ export default {
       pager,
       getUserList,
       handleCurrentChange,
-    };
+      handleDetail,
+    }
   },
-};
+}
 </script>
 
 <style lang="scss"></style>
