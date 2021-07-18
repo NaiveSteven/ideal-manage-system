@@ -7,6 +7,7 @@ import PermissionApi from './PermissionApi';
 import RoleApi from './RoleApi';
 import ModuleApi from './ModuleApi';
 import GoodsTypeApi from './GoodsTypeApi';
+import AdminApi from './AdminApi';
 
 export default {
     ...LoginApi,
@@ -17,4 +18,5 @@ export default {
     ...PermissionApi,
     ...RoleApi,
     ...ModuleApi,
+    ...AdminApi
 }

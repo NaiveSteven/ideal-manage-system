@@ -74,6 +74,14 @@ const routes = [
                 },
                 component: () => import('../pages/GoodsTypePage.vue')
             },
+            {
+                name: 'adminUser',
+                path: 'ideal/adminUser',
+                meta: {
+                    title: '管理员'
+                },
+                component: () => import('../pages/AdminPage.vue')
+            },
         ]
     },
     {

@@ -90,9 +90,15 @@
           :show-overflow-tooltip="item.showOverflowTooltip"
         >
           <template v-if="item.prop === 'state'" #default="scope">
-            <el-tag v-if="scope.row.state === 1" type="success">在售</el-tag>
-            <el-tag v-if="scope.row.state === 2" type="warning">下架</el-tag>
-            <el-tag v-if="scope.row.state === 3" type="danger">售罄</el-tag>
+            <el-tag v-if="scope.row.state === 1" type="success" effect="dark"
+              >在售</el-tag
+            >
+            <el-tag v-if="scope.row.state === 2" type="warning" effect="dark"
+              >下架</el-tag
+            >
+            <el-tag v-if="scope.row.state === 3" type="danger" effect="dark"
+              >售罄</el-tag
+            >
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120">
@@ -179,7 +185,7 @@ export default {
         width: 100,
         showOverflowTooltip: true,
         formatter(row, column, value) {
-          return (utils.getTreeListItem(value, goodsTypeList.value)).name;
+          return utils.getTreeListItem(value, goodsTypeList.value).name
         },
       },
       {
@@ -254,7 +260,7 @@ export default {
             params[item] = goodsForm[item]
           }
         })
-        params.goodsTypeId = goodsForm.goodsTypeId.slice().pop();
+        params.goodsTypeId = goodsForm.goodsTypeId.slice().pop()
         const { count, rows } = await ctx.$api.getGoodsList(params)
         goodsList.value = rows
         pager.total = count
@@ -284,7 +290,7 @@ export default {
           limit: 1000,
         }
         const { rows } = await ctx.$api.getGoodsTypeList(params)
-        goodsTypeList.value = rows;
+        goodsTypeList.value = rows
         modifyLabelValue(goodsTypeList.value)
       } catch (error) {
         ctx.$message(error.msg || error)

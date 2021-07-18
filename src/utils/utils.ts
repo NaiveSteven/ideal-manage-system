@@ -72,5 +72,17 @@ export default {
         }
         getItem(id, list)
         return selectedItem;
+    },
+    // 根据 id 数组，找到数组中的项
+    getListByIds(ids: number[] = [], list: Array<{ [index: string]: number }> = []) {
+        const arr: Array<{ [index: string]: number }> = [];
+        ids.forEach((item) => {
+            list.forEach((cur) => {
+                if (Number(item) === Number(cur.id)) {
+                    arr.push(cur);
+                }
+            })
+        })
+        return arr;
     }
 }
