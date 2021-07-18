@@ -82,6 +82,14 @@ const routes = [
                 },
                 component: () => import('../pages/AdminPage.vue')
             },
+            {
+                name: 'place-order-manage',
+                path: 'ideal/placeOrderManage',
+                meta: {
+                    title: '下单管理'
+                },
+                component: () => import('../pages/PlaceOrderPage.vue')
+            },
         ]
     },
     {

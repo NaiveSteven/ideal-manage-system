@@ -70,7 +70,7 @@ export const MENU_DATA: MenuItem[] = [
         ],
     },
     {
-        menuName: '商品模块管理',
+        menuName: '商品管理',
         name: 'goods-module-manage',
         icon: 'el-icon-shopping-cart-full',
         permission: 'menu.goodsModuleManage',
@@ -97,6 +97,22 @@ export const MENU_DATA: MenuItem[] = [
                 permission: 'menu.goodsManage',
                 path: '/ideal/goodsManage',
             },
+        ],
+    },
+    {
+        menuName: '订单管理',
+        name: 'order-manage',
+        icon: 'el-icon-tickets',
+        permission: 'menu.orderManage',
+        path: '/ideal/orderManage',
+        children: [
+            {
+                menuName: '下单管理',
+                name: 'place-order-manage',
+                icon: 'el-icon-document-add',
+                permission: 'menu.placeOrder',
+                path: '/ideal/placeOrderManage',
+            }
         ],
     },
     // {
