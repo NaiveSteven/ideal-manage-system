@@ -59,15 +59,14 @@
       :page-size="pager.limit"
       @current-change="handleCurrentChange"
     />
-    <!-- <AddEditGoodsDialog
-        :goodsTypeList="goodsTypeList"
-        :brandList="brandList"
-        :curItem="curItem"
-        :mode="dialogMode"
-        v-model="isShowAEDialog"
-        @updateList="getGoodsList"
-      />
-      <DelDialog
+    <AddEditOrderDialog
+      :goodsList="goodsList"
+      :curItem="curItem"
+      :mode="dialogMode"
+      v-model="isShowAEDialog"
+      @updateList="getPlaceOrderList"
+    />
+    <!-- <DelDialog
         v-model="isShowDelDialog"
         @delConfirm="handleDelConfirm"
         :contents="contents"
@@ -76,9 +75,9 @@
   </div>
 </template>
 <script>
-// import AddEditGoodsDialog from "../components/goods/AddEditGoodsDialog.vue"
+import AddEditOrderDialog from "./AddEditOrderDialog.vue"
 // import DelDialog from "../components/common/DelDialog.vue"
-import { getCurrentInstance, onMounted, reactive, ref } from "vue"
+import { getCurrentInstance, onMounted, reactive, ref, watch } from "vue"
 import {
   GOOD_STATE,
   DIALOG_MODE_ADD,
@@ -89,8 +88,11 @@ import {
 import utils from "../../utils/utils"
 export default {
   name: "PlaceOrderList",
-  //   components: { AddEditGoodsDialog, DelDialog },
-  setup() {
+  components: { AddEditOrderDialog },
+  props: {
+    deal_state: String,
+  },
+  setup(props) {
     const { ctx } = getCurrentInstance()
     const goodStateList = ref(GOOD_STATE)
     const checkedGoodsIds = ref([])
@@ -168,6 +170,13 @@ export default {
       },
     ])
 
+
+    watch(
+      () => props.deal_state,
+      () => {
+        getPlaceOrderList()
+      }
+    )
     onMounted(() => {
       getPlaceOrderList()
       getUserList()
@@ -184,6 +193,9 @@ export default {
         }
         if (placeOrderForm.state) {
           params.state = placeOrderForm.state
+        }
+        if (props.deal_state) {
+          params.deal_state = Number(props.deal_state)
         }
         const { rows } = await ctx.$api.getPlaceOrderList(params)
         placeOrderList.value = rows
