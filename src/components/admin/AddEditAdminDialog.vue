@@ -144,7 +144,6 @@ export default {
         if (props.mode === DIALOG_MODE_EDIT) {
           ctx.$nextTick(() => {
             Object.assign(dialogForm, props.curItem)
-            console.log(dialogForm, "dialogFormdialogFormdialogForm")
           })
         }
       }

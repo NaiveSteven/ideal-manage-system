@@ -140,7 +140,6 @@ export default {
           obj[permission.module_name] = permission.module_name;
           permissionIdList.value.push(permission.id);
         });
-        console.log(newValue, "newValue");
         Object.keys(obj).forEach((item) => {
           arr.push({
             module_name: item,
@@ -219,7 +218,6 @@ export default {
     };
 
     const handleAdd = async () => {
-      console.log(checkedPermissionList, "11111");
       isBtnLoading.value = true;
       try {
         const ids = checkedPermissionList.value.join();
