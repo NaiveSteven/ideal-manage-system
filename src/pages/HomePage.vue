@@ -39,16 +39,40 @@
             <i class="el-icon-bell"></i>
           </el-badge>
           <el-dropdown @command="handleLogout">
-            <span class="user-link">
-              {{ userInfo.username }}
-              <i class="el-icon--right"></i>
-            </span>
+            <div class="flex items-center flex-col">
+              <el-avatar :size="20" :src="userInfo.avatar">
+                <img
+                  src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"
+                />
+              </el-avatar>
+              <div class="user-link">
+                <span>{{ userInfo.nickname }}</span>
+                <i class="el-icon--right"></i>
+              </div>
+            </div>
+
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="email"
-                  >邮箱：{{ userInfo.userEmail }}</el-dropdown-item
+                <div class="flex justify-center">
+                  <el-avatar :size="40" :src="userInfo.avatar">
+                    <img
+                      src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"
+                    />
+                  </el-avatar>
+                </div>
+
+                <el-dropdown-item command="email" class="flex justify-center"
+                  >昵称：{{ userInfo.nickname }}</el-dropdown-item
                 >
-                <el-dropdown-item command="logout">退出</el-dropdown-item>
+                <el-dropdown-item command="username" class="flex justify-center"
+                  >用户名：{{ userInfo.username }}</el-dropdown-item
+                >
+                <el-dropdown-item command="phone" class="flex justify-center"
+                  >手机号：{{ userInfo.phone }}</el-dropdown-item
+                >
+                <el-dropdown-item command="logout" class="flex justify-center"
+                  >退出</el-dropdown-item
+                >
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -65,34 +89,87 @@
 </template>
 
 <script>
-import TreeMenu from "../components/TreeMenu.vue";
-import BreadCrumb from "../components/BreadCrumb.vue";
-import { MENU_DATA } from "../const/index.ts";
+import TreeMenu from "../components/TreeMenu.vue"
+import BreadCrumb from "../components/BreadCrumb.vue"
+import storage from "../utils/storage"
+import { MENU_DATA } from "../const/index.ts"
 export default {
   name: "HomePage",
   components: { TreeMenu, BreadCrumb },
   data() {
     return {
       isCollapse: false,
-      userInfo: this.$store.state.userInfo || { username: "", userEmail: "" },
       noticeCount: 0,
       menuData: MENU_DATA,
       activeMenu: location.hash.slice(1),
-    };
+      roleList: [],
+    }
   },
-  mounted() {},
+  async created() {
+    this.getAdminUserInfo()
+    await this.getRoleList()
+    this.getPermissionList()
+  },
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo
+    },
+  },
   methods: {
-    toggle() {
-      this.isCollapse = !this.isCollapse;
+    async getAdminUserInfo() {
+      try {
+        const res = await this.$api.getAdminUserInfo()
+        this.$store.commit("saveUserInfo", res)
+      } catch (error) {
+        this.$message.error(error.msg || error)
+      }
+    },
+    async getRoleList() {
+      try {
+        const params = { page: 1, limit: 1000 }
+        const { rows } = await this.$api.getRoleList(params)
+        this.roleList = rows
+      } catch (error) {
+        this.$message.error(error.msg || error)
+      }
+    },
+    async getPermissionList() {
+      try {
+        const params = { page: 1, limit: 1000 }
+        const { rows } = await this.$api.getPermissionList(params);
+        const curRoleList = this.getCurList(this.userInfo.roles, this.roleList)
+        const curPermissionList = this.getCurList(curRoleList[0].permissionsID, rows)
+        console.log(curRoleList,'curRoleListcurRoleListcurRoleList')
+        console.log(curPermissionList,'curPermissionListcurPermissionListcurPermissionList')
+        this.$store.commit("savePermissionList", curPermissionList)
+      } catch (error) {
+        console.log(error,'error')
+        this.$message.error(error.msg || error)
+      }
+    },
+    getCurList(ids, list) {
+      const arr = []
+      list.forEach((item) => {
+        ids.forEach((cur) => {
+          if (Number(cur) === Number(item.id)) {
+            arr.push(item)
+          }
+        })
+      })
+      return arr
     },
     handleLogout(key) {
-      if (key == "email") return;
-      this.$store.commit("saveUserInfo", "");
-      this.userInfo = null;
-      this.$router.push("/login");
+      if (key === "logout") {
+        storage.clearItem("token")
+        this.userInfo = null
+        this.$router.push("/login")
+      }
+    },
+    toggle() {
+      this.isCollapse = !this.isCollapse
     },
   },
-};
+}
 </script>
 
 <style lang="scss">

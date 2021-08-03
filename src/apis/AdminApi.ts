@@ -1,3 +1,10 @@
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-07-17 23:33:12
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-03 23:13:01
+ */
 import request from '../utils/request'
 import { GetAdminUserListReq, CreateAdminReq, UpdateAdminReq, DeleteAdminReq } from '../interfaces/Admin'
 
@@ -30,4 +37,10 @@ export default {
             data: params,
         })
     },
+    getAdminUserInfo() {
+        return request({
+            url: '/admin/getAdminUserInfo',
+            method: 'get'
+        })
+    }
 }

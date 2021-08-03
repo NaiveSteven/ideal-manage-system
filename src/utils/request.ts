@@ -1,5 +1,9 @@
-/**
- * axios二次封装
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-05-21 22:02:03
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-03 23:20:59
  */
 import axios from 'axios'
 import config from './../config'
@@ -18,8 +22,8 @@ const service = axios.create({
 // 请求拦截
 service.interceptors.request.use((req) => {
     const headers = req.headers;
-    const userInfo = storage.getItem('userInfo');
-    if (!headers.Authorization && userInfo) headers.Authorization = 'Bearer ' + userInfo.token;
+    const token = storage.getItem('token');
+    if (!headers.Authorization && token) headers.Authorization = 'Bearer ' + token;
     return req;
 })
 

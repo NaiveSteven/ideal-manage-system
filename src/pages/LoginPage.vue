@@ -33,6 +33,7 @@
 
 <script>
 import { ElMessage } from "element-plus";
+import storage from '../utils/storage'
 export default {
   name: "LoginPage",
   data() {
@@ -65,7 +66,7 @@ export default {
       this.isBtnLoading = true;
       try {
         const res = await this.$api.login(this.user);
-        this.$store.commit("saveUserInfo", res);
+        storage.setItem('token', res.token)
         this.$router.push({ name: "welcome" });
       } catch (error) {
         console.log(error,'error');
