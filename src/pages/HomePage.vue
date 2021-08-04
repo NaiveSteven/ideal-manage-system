@@ -31,6 +31,11 @@
           </div>
         </div>
         <div class="user-info">
+          <el-select v-model="curRole" placeholder="请选择角色" class="mr-2" @change="handleRoleChange">
+            <template v-for="item in curRoleList" :key="item.id">
+              <el-option :value="item.id" :label="item.name"></el-option>
+            </template>
+          </el-select>
           <el-badge
             :is-dot="noticeCount > 0 ? true : false"
             class="notice"
@@ -102,7 +107,10 @@ export default {
       noticeCount: 0,
       menuData: MENU_DATA,
       activeMenu: location.hash.slice(1),
-      roleList: [],
+      curRole: "",
+      roleList: [], // 所有角色
+      curRoleList: [], // 当前用户角色列表
+      permissionList: [], // 所有权限点
     }
   },
   async created() {
@@ -136,16 +144,29 @@ export default {
     async getPermissionList() {
       try {
         const params = { page: 1, limit: 1000 }
-        const { rows } = await this.$api.getPermissionList(params);
-        const curRoleList = this.getCurList(this.userInfo.roles, this.roleList)
-        const curPermissionList = this.getCurList(curRoleList[0].permissionsID, rows)
-        console.log(curRoleList,'curRoleListcurRoleListcurRoleList')
-        console.log(curPermissionList,'curPermissionListcurPermissionListcurPermissionList')
-        this.$store.commit("savePermissionList", curPermissionList)
+        const { rows } = await this.$api.getPermissionList(params)
+        this.permissionList = rows
+        if (this.userInfo.roles.length > 0) {
+          this.curRoleList = this.getCurList(this.userInfo.roles, this.roleList)
+          this.curRole = this.curRoleList[0].id
+          const curPermissionList = this.getCurList(
+            this.curRoleList[0].permissionsID,
+            this.permissionList
+          )
+          this.$store.commit("savePermissionList", curPermissionList)
+        }
       } catch (error) {
-        console.log(error,'error')
+        console.log(error, "error")
         this.$message.error(error.msg || error)
       }
+    },
+    handleRoleChange(roleId) {
+      const curRoleItem = this.roleList.find((item) => Number(roleId) === Number(item.id))
+      const curPermissionList = this.getCurList(
+        curRoleItem.permissionsID,
+        this.permissionList
+      )
+      this.$store.commit("savePermissionList", curPermissionList)
     },
     getCurList(ids, list) {
       const arr = []
