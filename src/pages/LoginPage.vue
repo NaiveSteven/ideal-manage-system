@@ -67,7 +67,7 @@ export default {
       try {
         const res = await this.$api.login(this.user);
         storage.setItem('token', res.token)
-        this.$router.push({ name: "welcome" });
+        this.$router.push({ name: "home" });
       } catch (error) {
         console.log(error,'error');
         ElMessage.error(error.message || error);

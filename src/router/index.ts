@@ -11,7 +11,7 @@ const routes = [
         redirect: '/ideal',
         children: [
             {
-                name: 'welcome',
+                name: 'home',
                 path: 'ideal',
                 meta: {
                     title: '欢迎'
@@ -83,7 +83,7 @@ const routes = [
                 component: () => import('../pages/AdminPage.vue')
             },
             {
-                name: 'place-order-manage',
+                name: 'placeOrderManage',
                 path: 'ideal/placeOrderManage',
                 meta: {
                     title: '下单管理'

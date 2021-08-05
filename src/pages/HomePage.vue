@@ -13,9 +13,9 @@
         :default-active="activeMenu"
         background-color="#001529"
         text-color="#fff"
-        router
         :collapse="isCollapse"
         class="nav-menu"
+        @select="handleSelectMenu"
       >
         <tree-menu :menuData="menuData" />
       </el-menu>
@@ -31,7 +31,12 @@
           </div>
         </div>
         <div class="user-info">
-          <el-select v-model="curRole" placeholder="请选择角色" class="mr-2" @change="handleRoleChange">
+          <el-select
+            v-model="curRole"
+            placeholder="请选择角色"
+            class="mr-2"
+            @change="handleRoleChange"
+          >
             <template v-for="item in curRoleList" :key="item.id">
               <el-option :value="item.id" :label="item.name"></el-option>
             </template>
@@ -106,7 +111,7 @@ export default {
       isCollapse: false,
       noticeCount: 0,
       menuData: MENU_DATA,
-      activeMenu: location.hash.slice(1),
+      activeMenu: "",
       curRole: "",
       roleList: [], // 所有角色
       curRoleList: [], // 当前用户角色列表
@@ -123,11 +128,19 @@ export default {
       return this.$store.state.userInfo
     },
   },
+  watch: {
+    $route: {
+      handler() {
+        this.activeMenu = this.$route.name
+      },
+      immediate: true,
+    },
+  },
   methods: {
     async getAdminUserInfo() {
       try {
         const res = await this.$api.getAdminUserInfo()
-        this.$store.commit("saveUserInfo", res)
+        this.$store.commit("saveData", { data: res, key: "userInfo" })
       } catch (error) {
         this.$message.error(error.msg || error)
       }
@@ -146,14 +159,21 @@ export default {
         const params = { page: 1, limit: 1000 }
         const { rows } = await this.$api.getPermissionList(params)
         this.permissionList = rows
-        if (this.userInfo.roles.length > 0) {
+        if (
+          this.userInfo &&
+          this.userInfo.roles &&
+          this.userInfo.roles.length > 0
+        ) {
           this.curRoleList = this.getCurList(this.userInfo.roles, this.roleList)
           this.curRole = this.curRoleList[0].id
           const curPermissionList = this.getCurList(
             this.curRoleList[0].permissionsID,
             this.permissionList
           )
-          this.$store.commit("savePermissionList", curPermissionList)
+          this.$store.commit("saveData", {
+            data: curPermissionList,
+            key: "permissionList",
+          })
         }
       } catch (error) {
         console.log(error, "error")
@@ -161,12 +181,25 @@ export default {
       }
     },
     handleRoleChange(roleId) {
-      const curRoleItem = this.roleList.find((item) => Number(roleId) === Number(item.id))
+      const curRoleItem = this.roleList.find(
+        (item) => Number(roleId) === Number(item.id)
+      )
       const curPermissionList = this.getCurList(
         curRoleItem.permissionsID,
         this.permissionList
       )
-      this.$store.commit("savePermissionList", curPermissionList)
+      const curPermissionNameList = this.getCurPermissionNameList(
+        this.permissionList
+      )
+      this.$store.commit("saveData", {
+        data: curPermissionList,
+        key: "permissionList",
+      })
+      this.$store.commit("saveData", {
+        data: curPermissionNameList,
+        key: "permissionNameList",
+      })
+      this.goRouteByRole(curRoleItem)
     },
     getCurList(ids, list) {
       const arr = []
@@ -179,11 +212,44 @@ export default {
       })
       return arr
     },
+    getCurPermissionNameList(permissionList) {
+      const arr = []
+      permissionList.forEach((item) => {
+        arr.push(item.name)
+      })
+      return arr
+    },
     handleLogout(key) {
       if (key === "logout") {
         storage.clearItem("token")
         this.userInfo = null
         this.$router.push("/login")
+      }
+    },
+    handleSelectMenu(name) {
+      if (this.$route.name !== name) {
+        this.$router.push({
+          name,
+        })
+      }
+    },
+    goRouteByRole(curRoleItem) {
+      if (curRoleItem.name === "超级管理员") {
+        this.$router.push({
+          name: "home",
+        })
+      } else if (curRoleItem.name === "订单操作员") {
+        this.$router.push({
+          name: "placeOrderManage",
+        })
+      } else if (curRoleItem.name === "商品管理员") {
+        this.$router.push({
+          name: "brandManage",
+        })
+      } else if (curRoleItem.name === "游客") {
+        this.$router.push({
+          name: "home",
+        })
       }
     },
     toggle() {
