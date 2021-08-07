@@ -166,6 +166,9 @@ export default {
         ) {
           this.curRoleList = this.getCurList(this.userInfo.roles, this.roleList)
           this.curRole = this.curRoleList[0].id
+          const curPermissionNameList = this.getCurPermissionNameList(
+            this.permissionList
+          )
           const curPermissionList = this.getCurList(
             this.curRoleList[0].permissionsID,
             this.permissionList
@@ -173,6 +176,10 @@ export default {
           this.$store.commit("saveData", {
             data: curPermissionList,
             key: "permissionList",
+          })
+          this.$store.commit("saveData", {
+            data: curPermissionNameList,
+            key: "permissionNameList",
           })
         }
       } catch (error) {
