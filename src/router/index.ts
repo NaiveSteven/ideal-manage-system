@@ -7,7 +7,7 @@ const routes = [
         meta: {
             title: '首页'
         },
-        component: () => import('../pages/HomePage.vue'),
+        component: () => import('../pages/layout/HomePage.vue'),
         redirect: '/ideal',
         children: [
             {
@@ -17,7 +17,7 @@ const routes = [
                     title: '欢迎',
                     permission: 'menu.home',
                 },
-                component: () => import('../pages/WelcomePage.vue')
+                component: () => import('../pages/layout/WelcomePage.vue')
             },
             {
                 name: 'consumer',
@@ -27,7 +27,7 @@ const routes = [
                     permission: 'menu.consumer',
 
                 },
-                component: () => import('../pages/ConsumerPage.vue')
+                component: () => import('../pages/user-manage/ConsumerPage.vue')
             },
             {
                 name: 'goodsManage',
@@ -36,7 +36,7 @@ const routes = [
                     title: '商品管理',
                     permission: 'menu.goods',
                 },
-                component: () => import('../pages/GoodsPage.vue')
+                component: () => import('../pages/goods-manage/GoodsPage.vue')
             },
             {
                 name: 'brandManage',
@@ -45,7 +45,7 @@ const routes = [
                     title: '品牌管理',
                     permission: 'menu.brand',
                 },
-                component: () => import('../pages/BrandPage.vue')
+                component: () => import('../pages/goods-manage/BrandPage.vue')
             },
             {
                 name: 'moduleManage',
@@ -54,7 +54,7 @@ const routes = [
                     title: '模块管理',
                     permission: 'menu.module',
                 },
-                component: () => import('../pages/ModulePage.vue')
+                component: () => import('../pages/auth-manage/ModulePage.vue')
             },
             {
                 name: 'permissionManage',
@@ -63,7 +63,7 @@ const routes = [
                     title: '权限点管理',
                     permission: 'menu.point',
                 },
-                component: () => import('../pages/PermissionPage.vue')
+                component: () => import('../pages/auth-manage/PermissionPage.vue')
             },
             {
                 name: 'roleManage',
@@ -72,7 +72,7 @@ const routes = [
                     title: '角色管理',
                     permission: 'menu.role',
                 },
-                component: () => import('../pages/RolePage.vue')
+                component: () => import('../pages/auth-manage/RolePage.vue')
             },
             {
                 name: 'goodsTypeMange',
@@ -81,7 +81,7 @@ const routes = [
                     title: '商品类别管理',
                     permission: 'menu.goodsType',
                 },
-                component: () => import('../pages/GoodsTypePage.vue')
+                component: () => import('../pages/goods-manage/GoodsTypePage.vue')
             },
             {
                 name: 'adminUser',
@@ -90,7 +90,7 @@ const routes = [
                     title: '管理员',
                     permission: 'menu.adminUser',
                 },
-                component: () => import('../pages/AdminPage.vue')
+                component: () => import('../pages/user-manage/AdminPage.vue')
             },
             {
                 name: 'placeOrderManage',
@@ -99,7 +99,7 @@ const routes = [
                     title: '下单管理',
                     permission: 'menu.placeOrder',
                 },
-                component: () => import('../pages/PlaceOrderPage.vue')
+                component: () => import('../pages/order-manage/PlaceOrderPage.vue')
             },
         ]
     },
@@ -109,7 +109,7 @@ const routes = [
         meta: {
             title: '登录'
         },
-        component: () => import('../pages/LoginPage.vue')
+        component: () => import('../pages/layout/LoginPage.vue')
     },
 ]
 const router = createRouter({
