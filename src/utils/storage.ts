@@ -1,6 +1,9 @@
-/**
- * Storage二次封装
- * @author JackBean
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-05-21 22:02:03
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-08 22:05:35
  */
 import config from './../config'
 export default {
