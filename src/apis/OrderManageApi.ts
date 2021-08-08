@@ -1,5 +1,12 @@
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-08-08 11:57:50
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-08 21:55:36
+ */
 import request from '../utils/request'
-import { GetPlaceOrderListReq, AddPlaceOrderReq, UpdatePlaceOrderReq } from '../interfaces/Order'
+import { GetPlaceOrderListReq, AddPlaceOrderReq, UpdatePlaceOrderReq } from '../interfaces/OrderManage'
 
 export default {
     getPlaceOrderList(params: GetPlaceOrderListReq) {

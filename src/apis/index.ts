@@ -1,23 +1,18 @@
-import LoginApi from './LoginApi';
-import UserApi from './UserApi';
-import GoodApi from './GoodApi';
-import BrandApi from './BrandApi';
-import PermissionApi from './PermissionApi';
-import RoleApi from './RoleApi';
-import ModuleApi from './ModuleApi';
-import GoodsTypeApi from './GoodsTypeApi';
-import AdminApi from './AdminApi';
-import OrderApi from './OrderApi';
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-05-22 16:58:57
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-08 21:30:13
+ */
+import AuthManageApi from './AuthManageApi'
+import GoodsManageApi from './GoodsManageApi'
+import OrderManageApi from './OrderManageApi'
+import UserManageApi from './UserManageApi'
 
 export default {
-    ...LoginApi,
-    ...UserApi,
-    ...GoodApi,
-    ...BrandApi,
-    ...GoodsTypeApi,
-    ...PermissionApi,
-    ...RoleApi,
-    ...ModuleApi,
-    ...AdminApi,
-    ...OrderApi
+    ...AuthManageApi,
+    ...GoodsManageApi,
+    ...OrderManageApi,
+    ...UserManageApi
 }

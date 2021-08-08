@@ -1,15 +1,30 @@
 /*
  * @Description: Description
  * @Author: mjqin
- * @Date: 2021-07-17 23:33:12
+ * @Date: 2021-08-08 11:56:55
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-03 23:13:01
+ * @LastEditTime: 2021-08-08 21:37:27
  */
+import { GetListReq } from '../interfaces/Common'
+import { CreateAdminReq, UpdateAdminReq, DeleteAdminReq, LoginReq } from '../interfaces/UserManage'
 import request from '../utils/request'
-import { GetAdminUserListReq, CreateAdminReq, UpdateAdminReq, DeleteAdminReq } from '../interfaces/Admin'
 
 export default {
-    getAdminList(params: GetAdminUserListReq) {
+    login(params: LoginReq) {
+        return request({
+            url: '/admin/adminUser',
+            method: 'post',
+            data: params,
+        })
+    },
+    getUserList(params: GetListReq) {
+        return request({
+            url: '/user/getUserList',
+            method: 'post',
+            data: params,
+        })
+    },
+    getAdminList(params: GetListReq) {
         return request({
             url: '/admin/getAdminUserList',
             method: 'post',

@@ -1,15 +1,19 @@
-export interface GetAdminUserListReq {
-    page: number;
-    limit: number;
-    keyword: string;
+/*
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-08-08 21:31:15
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-08-08 21:38:37
+ */
+export interface LoginReq {
+    username: string;
+    password: string;
 }
 
-export interface CreateAdminReq {
+export interface CreateAdminReq extends LoginReq {
     phone: string;
     avatar: string;
     nickname: string;
-    username: string;
-    password: string;
     roles: string;
 }
 
