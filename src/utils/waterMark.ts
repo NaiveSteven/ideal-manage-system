@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-10 21:51:13
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-10 22:09:44
+ * @LastEditTime: 2021-08-10 22:41:02
  */
 export function drawWaterMark(
     text = "水印",
@@ -12,34 +12,34 @@ export function drawWaterMark(
     callback: Function,
     dom = "body",
     _config = {
-      fontWeight: "bold", // 加粗
-      fontFamily: "黑体", // 字体
-      fillStyle: "rgba(0,0,0,0.1)", // 背景色
-      canvasWidth: 500, // canvas 宽
-      canvasHeight: 500, // canvas 高
-      textPostionX: 80, // 文字位置 x轴
-      textPostionY: 20, // 文字位置 y轴
-      zIndex: 999, // 层叠等级
-      showDouble: true, // 是否增加水印密度
+        fontWeight: "bold", // 加粗
+        fontFamily: "黑体", // 字体
+        fillStyle: "rgba(0,0,0,0.1)", // 背景色
+        canvasWidth: 500, // canvas 宽
+        canvasHeight: 500, // canvas 高
+        textPostionX: 80, // 文字位置 x轴
+        textPostionY: 20, // 文字位置 y轴
+        zIndex: 999, // 层叠等级
+        showDouble: true, // 是否增加水印密度
     }
-  ) {
+) {
     const config = {
-      fontWeight: _config.fontWeight || "bold", // 加粗
-      fontFamily: _config.fontFamily || "黑体", // 字体
-      fillStyle: _config.fillStyle || "rgba(0,0,0,0.1)", // 背景色
-      canvasWidth: _config.canvasWidth || 500, // canvas 宽
-      canvasHeight: _config.canvasHeight || 500, // canvas 高
-      textPostionX: _config.textPostionX || 80, // 文字位置 x轴
-      textPostionY: _config.textPostionY || 20, // 文字位置 y轴
-      zIndex: _config.zIndex || 999, // 层叠等级
-      showDouble: _config.showDouble || false, // 是否增加水印密度
+        fontWeight: _config.fontWeight || "bold", // 加粗
+        fontFamily: _config.fontFamily || "黑体", // 字体
+        fillStyle: _config.fillStyle || "rgba(0,0,0,0.1)", // 背景色
+        canvasWidth: _config.canvasWidth || 500, // canvas 宽
+        canvasHeight: _config.canvasHeight || 500, // canvas 高
+        textPostionX: _config.textPostionX || 80, // 文字位置 x轴
+        textPostionY: _config.textPostionY || 20, // 文字位置 y轴
+        zIndex: _config.zIndex || 999, // 层叠等级
+        showDouble: _config.showDouble || false, // 是否增加水印密度
     }
 
     let body
     if (dom) {
-      body = document.querySelector(dom) as any
+        body = document.querySelector(dom) as any
     } else {
-      body = document.querySelector("body") as any
+        body = document.querySelector("body") as any
     }
 
     const waterMarkDiv = document.createElement("div") as any // 渲染水印的 div
@@ -66,18 +66,18 @@ export function drawWaterMark(
     ctx.rotate((deg * Math.PI) / 360)
     ctx.fillText(text, config.textPostionX, config.textPostionY)
     if (config.showDouble) {
-      ctx.fillText(
-        text,
-        config.textPostionX + config.canvasWidth / 2,
-        config.textPostionY + 100
-      )
+        ctx.fillText(
+            text,
+            config.textPostionX + config.canvasWidth / 2,
+            config.textPostionY + 100
+        )
     }
     // 回调
     if (callback) {
-      callback()
+        callback()
     }
     waterMarkDiv.style.backgroundImage = `url(${canvas.toDataURL(
-      "image/png"
+        "image/png"
     )})`
     body.append(waterMarkDiv) // append 可以接收 DOM元素 或 DOMString字段   appendChild 只能接受 DOM元素
-  }
+}

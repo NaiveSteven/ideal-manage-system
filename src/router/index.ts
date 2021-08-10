@@ -101,6 +101,15 @@ const routes = [
                 },
                 component: () => import('../pages/order-manage/PlaceOrderPage.vue')
             },
+            {
+                name: 'placeOrderDetail',
+                path: 'ideal/placeOrderDetail',
+                meta: {
+                    title: '下单详情',
+                    permission: '',
+                },
+                component: () => import('../pages/order-manage/PlaceOrderDetailPage.vue')
+            },
         ]
     },
     {

@@ -45,6 +45,9 @@
           <el-button type="text" @click="handleEdit(scope.row)" size="mini"
             >编辑</el-button
           >
+          <el-button type="text" size="mini" @click="handleToDetail(scope.row)"
+            >详情</el-button
+          >
           <el-button type="text" size="mini" @click="handleDel(scope.row)"
             >删除</el-button
           >
@@ -328,6 +331,10 @@ export default {
       })
     }
 
+    const handleToDetail = (row) => {
+      ctx.$emit("toDetail", row)
+    }
+
     return {
       delMode,
       dialogMode,
@@ -361,6 +368,7 @@ export default {
       isDelBtnLoading,
       isShowDelDialog,
       contents,
+      handleToDetail,
     }
   },
 }
