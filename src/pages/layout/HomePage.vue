@@ -103,6 +103,7 @@ import { TreeMenu } from "@/components"
 import { BreadCrumb } from "@/components"
 import storage from "@/utils/storage"
 import { MENU_DATA } from "@/const/index.ts"
+import { drawWaterMark } from "@/utils/waterMark.ts"
 export default {
   name: "HomePage",
   components: { TreeMenu, BreadCrumb },
@@ -119,8 +120,9 @@ export default {
     }
   },
   async created() {
-    this.getAdminUserInfo()
+    await this.getAdminUserInfo()
     await this.getRoleList()
+    this.drawWaterMark()
     this.getPermissionList()
   },
   computed: {
@@ -240,6 +242,7 @@ export default {
         })
       }
     },
+    // 切换角色，默认跳转路由
     goRouteByRole(curRoleItem) {
       if (curRoleItem.name === "超级管理员") {
         this.$router.push({
@@ -258,6 +261,11 @@ export default {
           name: "home",
         })
       }
+    },
+    // 水印
+    drawWaterMark() {
+      const username = this.userInfo.username
+      drawWaterMark(username)
     },
     toggle() {
       this.isCollapse = !this.isCollapse
