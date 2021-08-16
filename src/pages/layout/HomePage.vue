@@ -134,6 +134,9 @@ export default {
     $route: {
       handler() {
         this.activeMenu = this.$route.name
+        if (this.$route.meta.parentName) {
+          this.activeMenu = this.$route.meta.parentName
+        }
       },
       immediate: true,
     },

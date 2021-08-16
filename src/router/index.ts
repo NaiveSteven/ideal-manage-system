@@ -107,6 +107,7 @@ const routes = [
                 meta: {
                     title: '下单详情',
                     permission: '',
+                    parentName: 'placeOrderManage'
                 },
                 component: () => import('../pages/order-manage/PlaceOrderDetailPage.vue')
             },
