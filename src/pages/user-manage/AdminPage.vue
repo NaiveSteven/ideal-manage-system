@@ -84,178 +84,152 @@
     </el-card>
   </div>
 </template>
-<script>
-import {AddEditAdminDialog} from "@/components"
-import {DelDialog} from "@/components"
-import { getCurrentInstance, onMounted, reactive, ref } from "vue"
+<script setup>
+import { AddEditAdminDialog } from "@/components"
+import { DelDialog } from "@/components"
+import { onMounted, reactive, ref, getCurrentInstance } from "vue"
 import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
 import utils from "@/utils/utils"
-export default {
-  name: "ModulePage",
-  components: { DelDialog, AddEditAdminDialog },
-  setup() {
-    const { ctx } = getCurrentInstance()
-    const checkedBrandIds = ref([])
-    const adminList = ref([])
-    const roleList = ref([])
-    const contents = ref([])
-    const isTableLoading = ref(false)
-    const isShowAEDialog = ref(false)
-    const isDelBtnLoading = ref(false)
-    const isShowDelDialog = ref(false)
-    const dialogMode = ref(DIALOG_MODE_ADD)
-    const curItem = ref({})
-    const Utils = reactive(utils);
-    const moduleForm = reactive({
-      keyword: "",
-    })
-    const pager = reactive({
-      page: 1,
-      limit: 10,
-      total: 10,
-    })
-    const columns = reactive([
-      {
-        label: "手机号",
-        prop: "phone",
-        minWidth: 120,
-      },
-      {
-        label: "密码",
-        prop: "password",
-        minWidth: 120,
-      },
-      {
-        label: "角色",
-        prop: "roles",
-        minWidth: 120,
-      },
-      {
-        label: "创建时间",
-        prop: "createdAt",
-        minWidth: 150,
-        formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value))
-        },
-      },
-    ])
 
-    onMounted(() => {
-      getRoleList()
-      getAdminList()
-    })
-
-    const getRoleList = async () => {
-      try {
-        const params = {
-          page: 1,
-          limit: 1000,
-        }
-        const { rows } = await ctx.$api.getRoleList(params)
-        roleList.value = rows
-        roleList.value.forEach((item) => {
-          item.label = item.name
-          item.value = item.id
-        })
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-    }
-
-    const getAdminList = async () => {
-      isTableLoading.value = true
-      try {
-        const params = { ...pager }
-        Object.keys(moduleForm).forEach((item) => {
-          if (moduleForm[item]) {
-            params[item] = moduleForm[item]
-          }
-        })
-        const { count, rows } = await ctx.$api.getAdminList(params)
-        adminList.value = rows
-        pager.total = count
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-      isTableLoading.value = false
-    }
-
-    const deleteAdmin = async (ids, adminUserId) => {
-      isDelBtnLoading.value = true
-      try {
-        await ctx.$api.deleteAdmin({ id: ids, adminUserId })
-        ctx.$message.success("删除成功")
-        isDelBtnLoading.value = false
-        isShowDelDialog.value = false
-        getAdminList()
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-      isDelBtnLoading.value = false
-    }
-
-    const handleDelConfirm = () => {
-      deleteAdmin(curItem.value.id, curItem.value.adminUserId)
-    }
-
-    const handleDel = (row) => {
-      curItem.value = row
-      isShowDelDialog.value = true
-    }
-
-    const handleCreate = () => {
-      dialogMode.value = DIALOG_MODE_ADD
-      isShowAEDialog.value = true
-    }
-
-    const handleEdit = (row) => {
-      dialogMode.value = DIALOG_MODE_EDIT
-      curItem.value = row
-      isShowAEDialog.value = true
-    }
-
-    const handleQuery = () => {
-      pager.page = 1
-      getAdminList()
-    }
-
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields()
-      getAdminList()
-    }
-
-    const handleCurrentChange = (current) => {
-      pager.page = current
-      getAdminList()
-    }
-
-    return {
-      dialogMode,
-      curItem,
-      isShowAEDialog,
-      isTableLoading,
-      roleList,
-      adminList,
-      moduleForm,
-      columns,
-      pager,
-      checkedBrandIds,
-      getAdminList,
-      handleQuery,
-      handleReset,
-      handleCurrentChange,
-      handleDel,
-      handleDelConfirm,
-      handleEdit,
-      handleCreate,
-      deleteAdmin,
-      getRoleList,
-      isDelBtnLoading,
-      isShowDelDialog,
-      contents,
-      Utils,
-    }
+const {
+  appContext: {
+    config: { globalProperties },
   },
+  ctx,
+} = getCurrentInstance()
+const checkedBrandIds = ref([])
+const adminList = ref([])
+const roleList = ref([])
+const contents = ref([])
+const isTableLoading = ref(false)
+const isShowAEDialog = ref(false)
+const isDelBtnLoading = ref(false)
+const isShowDelDialog = ref(false)
+const dialogMode = ref(DIALOG_MODE_ADD)
+const curItem = ref({})
+const Utils = reactive(utils)
+const moduleForm = reactive({
+  keyword: "",
+})
+const pager = reactive({
+  page: 1,
+  limit: 10,
+  total: 10,
+})
+const columns = reactive([
+  {
+    label: "手机号",
+    prop: "phone",
+    minWidth: 120,
+  },
+  {
+    label: "密码",
+    prop: "password",
+    minWidth: 120,
+  },
+  {
+    label: "角色",
+    prop: "roles",
+    minWidth: 120,
+  },
+  {
+    label: "创建时间",
+    prop: "createdAt",
+    minWidth: 150,
+    formatter: (row, column, value) => {
+      return utils.formateDate(new Date(value))
+    },
+  },
+])
+
+onMounted(() => {
+  getRoleList()
+  getAdminList()
+})
+const getRoleList = async () => {
+  try {
+    const params = {
+      page: 1,
+      limit: 1000,
+    }
+
+    const { rows } = await globalProperties.$api.getRoleList(params)
+    console.log(rows, "rows")
+    roleList.value = rows
+    roleList.value.forEach((item) => {
+      item.label = item.name
+      item.value = item.id
+    })
+  } catch (error) {
+    // globalProperties.$message.error(error.msg || error)
+  }
+}
+
+const getAdminList = async () => {
+  isTableLoading.value = true
+  try {
+    const params = { ...pager }
+    Object.keys(moduleForm).forEach((item) => {
+      if (moduleForm[item]) {
+        params[item] = moduleForm[item]
+      }
+    })
+    const { count, rows } = await globalProperties.$api.getAdminList(params)
+    adminList.value = rows
+    pager.total = count
+  } catch (error) {
+    // globalProperties.$message.error(error.msg || error)
+  }
+  isTableLoading.value = false
+}
+
+const deleteAdmin = async (ids, adminUserId) => {
+  isDelBtnLoading.value = true
+  try {
+    await globalProperties.$api.deleteAdmin({ id: ids, adminUserId })
+    globalProperties.$message.success("删除成功")
+    isDelBtnLoading.value = false
+    isShowDelDialog.value = false
+    getAdminList()
+  } catch (error) {
+    // globalProperties.$message.error(error.msg || error)
+  }
+  isDelBtnLoading.value = false
+}
+
+const handleDelConfirm = () => {
+  deleteAdmin(curItem.value.id, curItem.value.adminUserId)
+}
+
+const handleDel = (row) => {
+  curItem.value = row
+  isShowDelDialog.value = true
+}
+
+const handleCreate = () => {
+  dialogMode.value = DIALOG_MODE_ADD
+  isShowAEDialog.value = true
+}
+
+const handleEdit = (row) => {
+  dialogMode.value = DIALOG_MODE_EDIT
+  curItem.value = row
+  isShowAEDialog.value = true
+}
+
+const handleQuery = () => {
+  pager.page = 1
+  getAdminList()
+}
+
+const handleReset = (form) => {
+  ctx.$refs[form].resetFields()
+  getAdminList()
+}
+
+const handleCurrentChange = (current) => {
+  pager.page = current
+  getAdminList()
 }
 </script>
 
