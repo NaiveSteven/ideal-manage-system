@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-10 23:33:08
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-11 23:33:02
+ * @LastEditTime: 2021-09-10 17:44:38
 -->
 <template>
   <OrderStep />
@@ -87,12 +87,6 @@
   </el-card>
 </template>
 
-<script>
-// import { defineComponent } from '@vue/composition-api'
+<script setup>
 import { OrderStep } from "@/components"
-
-export default {
-  components: { OrderStep },
-  setup() {},
-}
 </script>

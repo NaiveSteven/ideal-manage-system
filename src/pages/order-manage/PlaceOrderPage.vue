@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-07-18 17:24:55
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-10 23:44:39
+ * @LastEditTime: 2021-09-10 17:45:14
 -->
 <template>
   <keep-alive>
@@ -14,35 +14,22 @@
         </template>
         <PlaceOrderList deal_state="1" @toDetail="clickToDetail" />
       </el-tab-pane>
-      <el-tab-pane label="正在处理" name="2"
-        ><PlaceOrderList deal_state="2" @toDetail="clickToDetail"
-      /></el-tab-pane>
-      <el-tab-pane label="处理完成" name="3"
-        ><PlaceOrderList deal_state="3" @toDetail="clickToDetail"
-      /></el-tab-pane>
+      <el-tab-pane label="正在处理" name="2"><PlaceOrderList deal_state="2" @toDetail="clickToDetail" /></el-tab-pane>
+      <el-tab-pane label="处理完成" name="3"><PlaceOrderList deal_state="3" @toDetail="clickToDetail" /></el-tab-pane>
     </el-tabs>
   </keep-alive>
 </template>
 
-<script>
-import { PlaceOrderList } from "@/components"
-import { getCurrentInstance, ref } from "vue"
-export default {
-  components: { PlaceOrderList },
-  setup() {
-    const { ctx } = getCurrentInstance()
-    const tabNameRef = ref("1")
+<script setup>
+import { PlaceOrderList } from "@/components";
+import { getCurrentInstance, ref } from "vue";
 
-    const clickToDetail = (row) => {
-      ctx.$router.push({
-        name: 'placeOrderDetail'
-      })
-    }
+const { ctx } = getCurrentInstance();
+const tabNameRef = ref("1");
 
-    return {
-      tabNameRef,
-      clickToDetail,
-    }
-  },
-}
+const clickToDetail = (row) => {
+  ctx.$router.push({
+    name: "placeOrderDetail",
+  });
+};
 </script>

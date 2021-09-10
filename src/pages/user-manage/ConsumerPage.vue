@@ -44,7 +44,6 @@
 import { getCurrentInstance, inject, onMounted, reactive, ref } from "vue"
 import utils from "@/utils/utils"
 import { ElMessage } from "element-plus"
-const { ctx } = getCurrentInstance()
 const $api = inject("$api")
 const userList = ref([])
 const pager = reactive({

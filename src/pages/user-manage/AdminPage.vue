@@ -91,12 +91,9 @@ import { onMounted, reactive, ref, getCurrentInstance } from "vue"
 import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
 import utils from "@/utils/utils"
 
-const {
-  appContext: {
-    config: { globalProperties },
-  },
-  ctx,
-} = getCurrentInstance()
+const { ctx } = getCurrentInstance()
+const $api = inject("$api")
+const $message = inject("$message")
 const checkedBrandIds = ref([])
 const adminList = ref([])
 const roleList = ref([])
@@ -153,7 +150,7 @@ const getRoleList = async () => {
       limit: 1000,
     }
 
-    const { rows } = await globalProperties.$api.getRoleList(params)
+    const { rows } = await $api.getRoleList(params)
     console.log(rows, "rows")
     roleList.value = rows
     roleList.value.forEach((item) => {
@@ -161,7 +158,7 @@ const getRoleList = async () => {
       item.value = item.id
     })
   } catch (error) {
-    // globalProperties.$message.error(error.msg || error)
+    $message.error(error.msg || error)
   }
 }
 
@@ -174,11 +171,11 @@ const getAdminList = async () => {
         params[item] = moduleForm[item]
       }
     })
-    const { count, rows } = await globalProperties.$api.getAdminList(params)
+    const { count, rows } = await $api.getAdminList(params)
     adminList.value = rows
     pager.total = count
   } catch (error) {
-    // globalProperties.$message.error(error.msg || error)
+    $message.error(error.msg || error)
   }
   isTableLoading.value = false
 }
@@ -186,13 +183,13 @@ const getAdminList = async () => {
 const deleteAdmin = async (ids, adminUserId) => {
   isDelBtnLoading.value = true
   try {
-    await globalProperties.$api.deleteAdmin({ id: ids, adminUserId })
-    globalProperties.$message.success("删除成功")
+    await $api.deleteAdmin({ id: ids, adminUserId })
+    $message.success("删除成功")
     isDelBtnLoading.value = false
     isShowDelDialog.value = false
     getAdminList()
   } catch (error) {
-    // globalProperties.$message.error(error.msg || error)
+    $message.error(error.msg || error)
   }
   isDelBtnLoading.value = false
 }
