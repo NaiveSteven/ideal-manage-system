@@ -77,10 +77,17 @@
       /> -->
   </div>
 </template>
-<script>
+<script lang="ts" setup>
 import { AddEditOrderDialog } from "@/components"
 // import DelDialog from "../components/common/DelDialog.vue"
-import { getCurrentInstance, onMounted, reactive, ref, watch } from "vue"
+import {
+  getCurrentInstance,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+  inject,
+} from "vue"
 import {
   GOOD_STATE,
   DIALOG_MODE_ADD,
@@ -89,288 +96,249 @@ import {
   DEL_DIALOG_MULTIPLE,
 } from "@/const"
 import utils from "@/utils/utils"
-export default {
-  name: "PlaceOrderList",
-  components: { AddEditOrderDialog },
-  props: {
-    deal_state: String,
+const props = defineProps<{
+  deal_state: string
+}>()
+const emit = defineEmits(["toDetail"])
+const { ctx } = getCurrentInstance()
+const $api = inject("$api")
+const $message = inject("$message")
+const goodStateList = ref(GOOD_STATE)
+const checkedGoodsIds = ref([])
+const placeOrderList = ref([])
+const goodsTypeList = ref([])
+const brandList = ref([])
+const goodsList = ref([])
+const userList = ref([])
+const contents = ref([])
+const isTableLoading = ref(false)
+const isShowAEDialog = ref(false)
+const isDelBtnLoading = ref(false)
+const isShowDelDialog = ref(false)
+const dialogMode = ref(DIALOG_MODE_ADD)
+const delMode = ref(DEL_DIALOG_MULTIPLE)
+const curItem = ref({})
+const placeOrderForm = reactive({
+  keyword: "",
+  brandId: "",
+  goodsTypeId: [],
+  state: 0,
+})
+const pager = reactive({
+  page: 1,
+  limit: 10,
+  total: 10,
+})
+const columns = reactive([
+  {
+    label: "用户Id",
+    prop: "userId",
+    width: 100,
+    showOverflowTooltip: true,
+    formatter: (row, column, value) => {
+      return utils.getListName(value, userList)
+    },
   },
-  setup(props) {
-    const { ctx } = getCurrentInstance()
-    const goodStateList = ref(GOOD_STATE)
-    const checkedGoodsIds = ref([])
-    const placeOrderList = ref([])
-    const goodsTypeList = ref([])
-    const brandList = ref([])
-    const goodsList = ref([])
-    const userList = ref([])
-    const contents = ref([])
-    const isTableLoading = ref(false)
-    const isShowAEDialog = ref(false)
-    const isDelBtnLoading = ref(false)
-    const isShowDelDialog = ref(false)
-    const dialogMode = ref(DIALOG_MODE_ADD)
-    const delMode = ref(DEL_DIALOG_MULTIPLE)
-    const curItem = ref({})
-    const placeOrderForm = reactive({
-      keyword: "",
-      brandId: "",
-      goodsTypeId: [],
-      state: 0,
-    })
-    const pager = reactive({
+  {
+    label: "商品名",
+    prop: "goodsId",
+    minWidth: 100,
+    showOverflowTooltip: true,
+    formatter: (row, column, value) => {
+      return utils.getListName(value, goodsList)
+    },
+  },
+  {
+    label: "地址",
+    prop: "address",
+    width: 100,
+    showOverflowTooltip: true,
+  },
+  {
+    label: "价格",
+    prop: "price",
+    minWidth: 100,
+  },
+  {
+    label: "购买数量",
+    prop: "count",
+    minWidth: 100,
+  },
+  {
+    label: "状态",
+    prop: "state",
+    minWidth: 150,
+  },
+  {
+    label: "创建时间",
+    prop: "createdAt",
+    width: 150,
+    formatter: (row, column, value) => {
+      return utils.formateDate(new Date(value))
+    },
+  },
+])
+
+watch(
+  () => props.deal_state,
+  () => {
+    getPlaceOrderList()
+  }
+)
+onMounted(() => {
+  getPlaceOrderList()
+  getUserList()
+  getGoodsList()
+  getBrandList()
+  getGoodsTypeList()
+})
+
+const getPlaceOrderList = async () => {
+  isTableLoading.value = true
+  try {
+    const params = {
+      ...pager,
+    }
+    if (placeOrderForm.state) {
+      params.state = placeOrderForm.state
+    }
+    if (props.deal_state) {
+      params.deal_state = Number(props.deal_state)
+    }
+    const { rows } = await $api.getPlaceOrderList(params)
+    placeOrderList.value = rows
+  } catch (error) {
+    $message.error(error.msg || error)
+  }
+  isTableLoading.value = false
+}
+
+const getGoodsList = async () => {
+  try {
+    const params = {
       page: 1,
-      limit: 10,
-      total: 10,
-    })
-    const columns = reactive([
-      {
-        label: "用户Id",
-        prop: "userId",
-        width: 100,
-        showOverflowTooltip: true,
-        formatter: (row, column, value) => {
-          return utils.getListName(value, userList)
-        },
-      },
-      {
-        label: "商品名",
-        prop: "goodsId",
-        minWidth: 100,
-        showOverflowTooltip: true,
-        formatter: (row, column, value) => {
-          return utils.getListName(value, goodsList)
-        },
-      },
-      {
-        label: "地址",
-        prop: "address",
-        width: 100,
-        showOverflowTooltip: true,
-      },
-      {
-        label: "价格",
-        prop: "price",
-        minWidth: 100,
-      },
-      {
-        label: "购买数量",
-        prop: "count",
-        minWidth: 100,
-      },
-      {
-        label: "状态",
-        prop: "state",
-        minWidth: 150,
-      },
-      {
-        label: "创建时间",
-        prop: "createdAt",
-        width: 150,
-        formatter: (row, column, value) => {
-          return utils.formateDate(new Date(value))
-        },
-      },
-    ])
-
-    watch(
-      () => props.deal_state,
-      () => {
-        getPlaceOrderList()
-      }
-    )
-    onMounted(() => {
-      getPlaceOrderList()
-      getUserList()
-      getGoodsList()
-      getBrandList()
-      getGoodsTypeList()
-    })
-
-    const getPlaceOrderList = async () => {
-      isTableLoading.value = true
-      try {
-        const params = {
-          ...pager,
-        }
-        if (placeOrderForm.state) {
-          params.state = placeOrderForm.state
-        }
-        if (props.deal_state) {
-          params.deal_state = Number(props.deal_state)
-        }
-        const { rows } = await ctx.$api.getPlaceOrderList(params)
-        placeOrderList.value = rows
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-      isTableLoading.value = false
+      limit: 1000,
     }
+    const { rows } = await $api.getGoodsList(params)
+    goodsList.value = rows
+  } catch (error) {
+    $message.error(error.msg || error)
+  }
+}
 
-    const getGoodsList = async () => {
-      try {
-        const params = {
-          page: 1,
-          limit: 1000,
-        }
-        const { rows } = await ctx.$api.getGoodsList(params)
-        goodsList.value = rows
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-    }
+const getUserList = async () => {
+  const params = { page: 1, limit: 1000 }
+  try {
+    const { rows } = await $api.getUserList(params)
+    userList.value = rows
+  } catch (error) {
+    $message.error(error.msg || error)
+  }
+}
 
-    const getUserList = async () => {
-      const params = { page: 1, limit: 1000 }
-      try {
-        const { rows } = await ctx.$api.getUserList(params)
-        userList.value = rows
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
+const getBrandList = async () => {
+  try {
+    const params = {
+      page: 1,
+      limit: 1000,
     }
+    const { rows } = await $api.getBrandList(params)
+    brandList.value = rows
+  } catch (error) {
+    $message(error.msg || error)
+  }
+}
 
-    const getBrandList = async () => {
-      try {
-        const params = {
-          page: 1,
-          limit: 1000,
-        }
-        const { rows } = await ctx.$api.getBrandList(params)
-        brandList.value = rows
-      } catch (error) {
-        ctx.$message(error.msg || error)
-      }
+const getGoodsTypeList = async () => {
+  try {
+    const params = {
+      page: 1,
+      limit: 1000,
     }
+    const { rows } = await $api.getGoodsTypeList(params)
+    goodsTypeList.value = rows
+    modifyLabelValue(goodsTypeList.value)
+  } catch (error) {
+    $message(error.msg || error)
+  }
+}
 
-    const getGoodsTypeList = async () => {
-      try {
-        const params = {
-          page: 1,
-          limit: 1000,
-        }
-        const { rows } = await ctx.$api.getGoodsTypeList(params)
-        goodsTypeList.value = rows
-        modifyLabelValue(goodsTypeList.value)
-      } catch (error) {
-        ctx.$message(error.msg || error)
-      }
-    }
+const deleteGoods = async (ids) => {
+  isDelBtnLoading.value = true
+  try {
+    await $api.deleteGoods({ id: ids })
+    $message.success("删除成功")
+    isDelBtnLoading.value = false
+    isShowDelDialog.value = false
+    getGoodsList()
+  } catch (error) {
+    $message.error(error.msg || error)
+  }
+  isDelBtnLoading.value = false
+}
 
-    const deleteGoods = async (ids) => {
-      isDelBtnLoading.value = true
-      try {
-        await ctx.$api.deleteGoods({ id: ids })
-        ctx.$message.success("删除成功")
-        isDelBtnLoading.value = false
-        isShowDelDialog.value = false
-        getGoodsList()
-      } catch (error) {
-        ctx.$message.error(error.msg || error)
-      }
-      isDelBtnLoading.value = false
-    }
+const handleDelConfirm = () => {
+  if (delMode.value === DEL_DIALOG_SINGLE) {
+    deleteGoods([curItem.value.id])
+  } else {
+    deleteGoods(checkedGoodsIds.value)
+  }
+}
 
-    const handleDelConfirm = () => {
-      if (delMode.value === DEL_DIALOG_SINGLE) {
-        deleteGoods([curItem.value.id])
-      } else {
-        deleteGoods(checkedGoodsIds.value)
-      }
-    }
+const handleDel = (row) => {
+  delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
+  isShowDelDialog.value = true
+  if (row) {
+    curItem.value = row
+  }
+}
 
-    const handleDel = (row) => {
-      delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
-      isShowDelDialog.value = true
-      if (row) {
-        curItem.value = row
-      }
-    }
+const handleSelectionChange = (list) => {
+  const arr = []
+  list.map((item) => {
+    arr.push(item.id)
+  })
+  checkedGoodsIds.value = arr
+}
 
-    const handleSelectionChange = (list) => {
-      const arr = []
-      list.map((item) => {
-        arr.push(item.id)
-      })
-      checkedGoodsIds.value = arr
-    }
+const handleCreate = () => {
+  dialogMode.value = DIALOG_MODE_ADD
+  isShowAEDialog.value = true
+}
 
-    const handleCreate = () => {
-      dialogMode.value = DIALOG_MODE_ADD
-      isShowAEDialog.value = true
-    }
+const handleEdit = (row) => {
+  dialogMode.value = DIALOG_MODE_EDIT
+  curItem.value = row
+  isShowAEDialog.value = true
+}
 
-    const handleEdit = (row) => {
-      dialogMode.value = DIALOG_MODE_EDIT
-      curItem.value = row
-      isShowAEDialog.value = true
-    }
+const handleQuery = () => {
+  pager.page = 1
+  getGoodsList()
+}
 
-    const handleQuery = () => {
-      pager.page = 1
-      getGoodsList()
-    }
+const handleReset = (form) => {
+  ctx.$refs[form].resetFields()
+  getGoodsList()
+}
 
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields()
-      getGoodsList()
-    }
+const handleCurrentChange = (current) => {
+  pager.page = current
+  getGoodsList()
+}
 
-    const handleCurrentChange = (current) => {
-      pager.page = current
-      getGoodsList()
+const modifyLabelValue = (list) => {
+  list.forEach((item) => {
+    item.label = item.name
+    item.value = item.id
+    if (item.children) {
+      modifyLabelValue(item.children)
     }
+  })
+}
 
-    const modifyLabelValue = (list) => {
-      list.forEach((item) => {
-        item.label = item.name
-        item.value = item.id
-        if (item.children) {
-          modifyLabelValue(item.children)
-        }
-      })
-    }
-
-    const handleToDetail = (row) => {
-      ctx.$emit("toDetail", row)
-    }
-
-    return {
-      delMode,
-      dialogMode,
-      curItem,
-      isShowAEDialog,
-      isTableLoading,
-      goodStateList,
-      goodsList,
-      userList,
-      placeOrderList,
-      placeOrderForm,
-      columns,
-      pager,
-      checkedGoodsIds,
-      brandList,
-      getPlaceOrderList,
-      goodsTypeList,
-      getGoodsList,
-      handleQuery,
-      handleReset,
-      handleCurrentChange,
-      handleDel,
-      handleDelConfirm,
-      handleEdit,
-      handleSelectionChange,
-      handleCreate,
-      getBrandList,
-      getUserList,
-      getGoodsTypeList,
-      deleteGoods,
-      isDelBtnLoading,
-      isShowDelDialog,
-      contents,
-      handleToDetail,
-    }
-  },
+const handleToDetail = (row) => {
+  emit("toDetail", row)
 }
 </script>
 

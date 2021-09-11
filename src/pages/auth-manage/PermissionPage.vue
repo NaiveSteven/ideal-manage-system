@@ -68,7 +68,7 @@
 <script setup>
 import { AddEditPermissionDialog } from "@/components";
 import { DelDialog } from "@/components";
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+import { getCurrentInstance, onMounted, reactive, ref, inject } from "vue";
 import {
   DIALOG_MODE_ADD,
   DIALOG_MODE_EDIT,

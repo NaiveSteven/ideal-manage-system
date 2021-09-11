@@ -86,210 +86,181 @@
     </el-dialog>
   </div>
 </template>
-<script>
-import { getCurrentInstance, reactive, ref, watch } from "vue"
+<script lang="ts" setup>
+import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
 import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
-export default {
-  name: "AddEditGoodsDialog",
-  props: {
-    modelValue: {
-      type: Boolean,
+const props = defineProps<{
+  modelValue: boolean
+  mode: string
+  curItem: object
+  brandList: array
+  goodsTypeList: array
+}>()
+const emit = defineEmits(["update:modelValue", "updateList"])
+const { ctx } = getCurrentInstance()
+const $api = inject("$api")
+const $message = inject("$message")
+const visible = ref(false)
+const isBtnLoading = ref(false)
+const goodStateList = ref(GOOD_STATE)
+const dialogForm = reactive({
+  id: "",
+  name: "",
+  goodsTypeId: [],
+  brandId: "",
+  desc: "",
+  price: 0,
+  marketPrice: 0,
+  size: "",
+  count: 0,
+  saleNum: 0,
+  state: 1,
+  imageUrl: "",
+})
+const dialogFormRules = reactive({
+  name: [
+    {
       required: true,
+      trigger: "change",
     },
-    mode: {
-      type: String,
-      default: DIALOG_MODE_ADD,
+  ],
+  goodsTypeId: [
+    {
+      required: true,
+      trigger: "change",
     },
-    brandList: {
-      type: Array,
-      default: () => [],
+  ],
+  brandId: [
+    {
+      required: true,
+      trigger: "change",
     },
-    goodsTypeList: {
-      type: Array,
-      default: () => [],
+  ],
+  desc: [
+    {
+      required: true,
+      trigger: "change",
     },
-    curItem: {
-      type: Object,
-      default: () => {},
+  ],
+  price: [
+    {
+      required: true,
+      trigger: "change",
     },
-  },
-  setup(props, { emit }) {
-    const { ctx } = getCurrentInstance()
-    const visible = ref(false)
-    const isBtnLoading = ref(false)
-    const goodStateList = ref(GOOD_STATE)
-    const dialogForm = reactive({
-      id: "",
-      name: "",
-      goodsTypeId: [],
-      brandId: "",
-      desc: "",
-      price: 0,
-      marketPrice: 0,
-      size: "",
-      count: 0,
-      saleNum: 0,
-      state: 1,
-      imageUrl: "",
-    })
-    const dialogFormRules = reactive({
-      name: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      goodsTypeId: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      brandId: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      desc: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      price: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      marketPrice: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      size: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      count: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      state: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      imageUrl: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      saleNum: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-    })
+  ],
+  marketPrice: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  size: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  count: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  state: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  imageUrl: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  saleNum: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+})
 
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        visible.value = newValue
-      }
-    )
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    visible.value = newValue
+  }
+)
 
-    watch(visible, (newValue) => {
-      if (!newValue) {
-        handleReset("form")
-      } else {
-        if (props.mode === DIALOG_MODE_EDIT) {
-          ctx.$nextTick(() => {
-            Object.assign(dialogForm, props.curItem)
-          })
-        }
-      }
-      emit("update:modelValue", newValue)
-    })
-
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields()
-    }
-
-    const handleClose = () => {
-      visible.value = false
-      handleReset("form")
-    }
-
-    const handleSubmit = () => {
-      ctx.$refs.form.validate(async (valid) => {
-        if (valid) {
-          if (props.mode === DIALOG_MODE_ADD) {
-            handleAdd()
-          } else {
-            handleUpdate()
-          }
-        }
+watch(visible, (newValue) => {
+  if (!newValue) {
+    handleReset("form")
+  } else {
+    if (props.mode === DIALOG_MODE_EDIT) {
+      ctx.$nextTick(() => {
+        Object.assign(dialogForm, props.curItem)
       })
     }
+  }
+  emit("update:modelValue", newValue)
+})
 
-    const handleAdd = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = {
-          ...dialogForm,
-        }
-        params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
-        await ctx.$api.addGoods(params)
-        visible.value = false
-        ctx.$message.success("创建成功")
-        emit("updateList")
-      } catch (error) {
-        ctx.$message(error.msg || error)
+const handleReset = (form) => {
+  ctx.$refs[form].resetFields()
+}
+
+const handleClose = () => {
+  visible.value = false
+  handleReset("form")
+}
+
+const handleSubmit = () => {
+  ctx.$refs.form.validate(async (valid) => {
+    if (valid) {
+      if (props.mode === DIALOG_MODE_ADD) {
+        handleAdd()
+      } else {
+        handleUpdate()
       }
-      isBtnLoading.value = false
     }
+  })
+}
 
-    const handleUpdate = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = { ...dialogForm, id: props.curItem.id }
-        params.goodsTypeId =
-          typeof dialogForm.goodsTypeId === "number"
-            ? dialogForm.goodsTypeId
-            : dialogForm.goodsTypeId.slice().pop()
-        await ctx.$api.updateGoods(params)
-        visible.value = false
-        ctx.$message.success("编辑成功")
-        emit("updateList")
-      } catch (error) {
-        console.log(error, "error")
-        ctx.$message(error.msg || error)
-      }
-      isBtnLoading.value = false
+const handleAdd = async () => {
+  isBtnLoading.value = true
+  try {
+    const params = {
+      ...dialogForm,
     }
+    params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
+    await $api.addGoods(params)
+    visible.value = false
+    $message.success("创建成功")
+    emit("updateList")
+  } catch (error) {
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
+}
 
-    return {
-      isBtnLoading,
-      goodStateList,
-      visible,
-      dialogForm,
-      dialogFormRules,
-      handleReset,
-      handleClose,
-      handleSubmit,
-      handleUpdate,
-    }
-  },
+const handleUpdate = async () => {
+  isBtnLoading.value = true
+  try {
+    const params = { ...dialogForm, id: props.curItem.id }
+    params.goodsTypeId =
+      typeof dialogForm.goodsTypeId === "number"
+        ? dialogForm.goodsTypeId
+        : dialogForm.goodsTypeId.slice().pop()
+    await $api.updateGoods(params)
+    visible.value = false
+    $message.success("编辑成功")
+    emit("updateList")
+  } catch (error) {
+    console.log(error, "error")
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
 }
 </script>
 

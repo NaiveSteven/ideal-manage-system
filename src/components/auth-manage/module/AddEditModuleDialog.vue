@@ -11,10 +11,17 @@
         :rules="dialogFormRules"
       >
         <el-form-item label="模块名" prop="moduleName" label-width="100px">
-          <el-input v-model="dialogForm.moduleName" placeholder="请输入模块名" />
+          <el-input
+            v-model="dialogForm.moduleName"
+            placeholder="请输入模块名"
+          />
         </el-form-item>
         <el-form-item label="备注" prop="remark" label-width="100px">
-          <el-input v-model="dialogForm.remark" type="textarea" placeholder="请输入备注" />
+          <el-input
+            v-model="dialogForm.remark"
+            type="textarea"
+            placeholder="请输入备注"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -31,129 +38,109 @@
     </el-dialog>
   </div>
 </template>
-<script>
-import { getCurrentInstance, reactive, ref, watch } from "vue";
-import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const";
-export default {
-  name: "AddEditModuleDialog",
-  props: {
-    modelValue: {
-      type: Boolean,
+<script lang="ts" setup>
+import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
+import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
+
+const props = defineProps<{
+  modelValue: boolean
+  mode: string
+  curItem: object
+}>()
+const emit = defineEmits(['update:modelValue', 'updateList'])
+const { ctx } = getCurrentInstance()
+const $api = inject("$api")
+const $message = inject("$message")
+
+const visible = ref(false)
+const isBtnLoading = ref(false)
+const dialogForm = reactive({
+  id: "",
+  moduleName: "",
+  remark: "",
+})
+const dialogFormRules = reactive({
+  moduleName: [
+    {
       required: true,
+      trigger: "change",
     },
-    mode: {
-      type: String,
-      default: DIALOG_MODE_ADD,
+  ],
+  remark: [
+    {
+      required: true,
+      trigger: "change",
     },
-    curItem: {
-      type: Object,
-      default: () => {},
-    },
-  },
-  setup(props, { emit }) {
-    const { ctx } = getCurrentInstance();
-    const visible = ref(false);
-    const isBtnLoading = ref(false);
-    const dialogForm = reactive({
-      id: "",
-      moduleName: "",
-      remark: "",
-    });
-    const dialogFormRules = reactive({
-      moduleName: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      remark: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-    });
+  ],
+})
 
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        visible.value = newValue;
-      }
-    );
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    visible.value = newValue
+  }
+)
 
-    watch(visible, (newValue) => {
-      if (!newValue) {
-        handleReset("form");
+watch(visible, (newValue) => {
+  if (!newValue) {
+    handleReset("form")
+  } else {
+    if (props.mode === DIALOG_MODE_EDIT) {
+      ctx.$nextTick(() => {
+        Object.assign(dialogForm, props.curItem)
+      })
+    }
+  }
+  emit("update:modelValue", newValue)
+})
+
+const handleReset = (form) => {
+  ctx.$refs[form].resetFields()
+}
+
+const handleClose = () => {
+  visible.value = false
+  handleReset("form")
+}
+
+const handleSubmit = () => {
+  ctx.$refs.form.validate(async (valid) => {
+    if (valid) {
+      if (props.mode === DIALOG_MODE_ADD) {
+        handleAdd()
       } else {
-        if (props.mode === DIALOG_MODE_EDIT) {
-          ctx.$nextTick(() => {
-            Object.assign(dialogForm, props.curItem);
-          });
-        }
+        handleUpdate()
       }
-      emit("update:modelValue", newValue);
-    });
+    }
+  })
+}
 
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields();
-    };
+const handleAdd = async () => {
+  isBtnLoading.value = true
+  try {
+    await $api.addModule({ ...dialogForm })
+    visible.value = false
+    $message.success("创建成功")
+    emit("updateList")
+  } catch (error) {
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
+}
 
-    const handleClose = () => {
-      visible.value = false;
-      handleReset("form");
-    };
-
-    const handleSubmit = () => {
-      ctx.$refs.form.validate(async (valid) => {
-        if (valid) {
-          if (props.mode === DIALOG_MODE_ADD) {
-            handleAdd();
-          } else {
-            handleUpdate();
-          }
-        }
-      });
-    };
-
-    const handleAdd = async () => {
-      isBtnLoading.value = true;
-      try {
-        await ctx.$api.addModule({ ...dialogForm });
-        visible.value = false;
-        ctx.$message.success("创建成功");
-        emit("updateList");
-      } catch (error) {
-        ctx.$message(error.msg || error);
-      }
-      isBtnLoading.value = false;
-    };
-
-    const handleUpdate = async () => {
-      isBtnLoading.value = true;
-      try {
-        const params = { ...dialogForm, id: props.curItem.id };
-        await ctx.$api.updateModule(params);
-        visible.value = false;
-        ctx.$message.success("编辑成功");
-        emit("updateList");
-      } catch (error) {
-        ctx.$message(error.msg || error);
-      }
-      isBtnLoading.value = false;
-    };
-
-    return {
-      isBtnLoading,
-      visible,
-      dialogForm,
-      dialogFormRules,
-      handleReset,
-      handleClose,
-      handleSubmit,
-      handleUpdate,
-    };
-  },
-};
+const handleUpdate = async () => {
+  isBtnLoading.value = true
+  try {
+    const params = { ...dialogForm, id: props.curItem.id }
+    await $api.updateModule(params)
+    visible.value = false
+    $message.success("编辑成功")
+    emit("updateList")
+  } catch (error) {
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
+}
 </script>
 
 <style lang="scss"></style>

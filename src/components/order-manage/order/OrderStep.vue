@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-11 23:08:29
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-11 23:41:25
+ * @LastEditTime: 2021-09-12 02:17:33
 -->
 <template>
   <el-card header="处理进度" class="mb-6">
@@ -29,19 +29,9 @@
   </el-card>
 </template>
 
-<script>
-export default {
-  name: "OrderStep",
-  props: {
-    deal_state: {
-      type: Number,
-      default: 1,
-    },
-    state: {
-      type: Number,
-      default: 1,
-    },
-  },
-  setup() {},
-}
+<script lang="ts" setup>
+const props = defineProps<{
+  deal_state: number
+  state: number
+}>()
 </script>

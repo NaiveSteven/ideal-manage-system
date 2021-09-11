@@ -87,7 +87,7 @@
 <script setup>
 import { AddEditAdminDialog } from "@/components"
 import { DelDialog } from "@/components"
-import { onMounted, reactive, ref, getCurrentInstance } from "vue"
+import { onMounted, reactive, ref, getCurrentInstance, inject } from "vue"
 import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
 import utils from "@/utils/utils"
 

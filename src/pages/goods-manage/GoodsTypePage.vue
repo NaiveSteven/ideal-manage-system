@@ -59,7 +59,7 @@
 <script setup>
 import { AddEditGoodsTypeDialog } from "@/components";
 import { DelDialog } from "@/components";
-import { getCurrentInstance, onMounted, reactive, ref } from "vue";
+import { getCurrentInstance, onMounted, reactive, ref, inject } from "vue";
 import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT, DEL_DIALOG_SINGLE, DEL_DIALOG_MULTIPLE } from "@/const";
 import utils from "@/utils/utils";
 

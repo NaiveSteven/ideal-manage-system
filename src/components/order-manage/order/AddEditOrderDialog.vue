@@ -55,191 +55,165 @@
     </template>
   </el-dialog>
 </template>
-<script>
-import { getCurrentInstance, reactive, ref, watch } from "vue"
+<script lang="ts" setup>
+import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
 import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
 import utils from "@/utils/utils"
-export default {
-  name: "AddEditOrderDialog",
-  props: {
-    modelValue: {
-      type: Boolean,
+
+const props = defineProps<{
+  modelValue: boolean
+  mode: string
+  curItem: object
+  goodsList: array
+}>()
+const emit = defineEmits(["update:modelValue", "updateList"])
+const { ctx } = getCurrentInstance()
+const $api = inject("$api")
+const $message = inject("$message")
+const visible = ref(false)
+const isBtnLoading = ref(false)
+const goodStateList = ref(GOOD_STATE)
+const dialogForm = reactive({
+  id: "",
+  name: "",
+  phone: "",
+  address: "",
+  count: 0,
+  goodsId: "",
+  deal_state: 1,
+  state: 1,
+})
+const dialogFormRules = reactive({
+  name: [
+    {
       required: true,
+      trigger: "change",
     },
-    mode: {
-      type: String,
-      default: DIALOG_MODE_ADD,
+  ],
+  phone: [
+    {
+      required: true,
+      trigger: "change",
     },
-    goodsList: {
-      type: Array,
-      default: () => [],
+  ],
+  address: [
+    {
+      required: true,
+      trigger: "change",
     },
-    curItem: {
-      type: Object,
-      default: () => {},
+  ],
+  count: [
+    {
+      required: true,
+      trigger: "change",
     },
-  },
-  emits: ["updateList", "update:modelValue"],
-  setup(props, { emit }) {
-    const { ctx } = getCurrentInstance()
-    const visible = ref(false)
-    const isBtnLoading = ref(false)
-    const goodStateList = ref(GOOD_STATE)
-    const dialogForm = reactive({
-      id: "",
-      name: "",
-      phone: "",
-      address: "",
-      count: 0,
-      goodsId: "",
-      deal_state: 1,
-      state: 1,
-    })
-    const dialogFormRules = reactive({
-      name: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      phone: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      address: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      count: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      goodsId: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      deal_state: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      state: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-    })
+  ],
+  goodsId: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  deal_state: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  state: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+})
 
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        visible.value = newValue
-      }
-    )
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    visible.value = newValue
+  }
+)
 
-    watch(visible, (newValue) => {
-      if (!newValue) {
-        handleReset("form")
-      } else {
-        if (props.mode === DIALOG_MODE_EDIT) {
-          ctx.$nextTick(() => {
-            Object.assign(dialogForm, props.curItem)
-          })
-        }
-      }
-      emit("update:modelValue", newValue)
-    })
-
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields()
-    }
-
-    const handleClose = () => {
-      visible.value = false
-      handleReset("form")
-    }
-
-    const handleSubmit = () => {
-      ctx.$refs.form.validate(async (valid) => {
-        if (valid) {
-          if (props.mode === DIALOG_MODE_ADD) {
-            handleAdd()
-          } else {
-            handleUpdate()
-          }
-        }
+watch(visible, (newValue) => {
+  if (!newValue) {
+    handleReset("form")
+  } else {
+    if (props.mode === DIALOG_MODE_EDIT) {
+      ctx.$nextTick(() => {
+        Object.assign(dialogForm, props.curItem)
       })
     }
+  }
+  emit("update:modelValue", newValue)
+})
 
-    const handleAdd = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = {
-          ...dialogForm,
-          price:
-            Number(
-              utils.getListName(dialogForm.goodsId, props.goodsList, "price")
-            ) * Number(dialogForm.count),
-        }
-        delete params.id
-        delete params.name
-        params.userId = 0
-        await ctx.$api.addPlaceOrder(params)
-        visible.value = false
-        ctx.$message.success("创建成功")
-        emit("updateList")
-      } catch (error) {
-        console.log(error, "error")
-        ctx.$message(error.msg || error)
+const handleReset = (form) => {
+  ctx.$refs[form].resetFields()
+}
+
+const handleClose = () => {
+  visible.value = false
+  handleReset("form")
+}
+
+const handleSubmit = () => {
+  ctx.$refs.form.validate(async (valid) => {
+    if (valid) {
+      if (props.mode === DIALOG_MODE_ADD) {
+        handleAdd()
+      } else {
+        handleUpdate()
       }
-      isBtnLoading.value = false
     }
+  })
+}
 
-    const handleUpdate = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = {
-          ...dialogForm,
-          id: props.curItem.id,
-          price:
-            Number(
-              utils.getListName(dialogForm.goodsId, props.goodsList, "price")
-            ) * Number(dialogForm.count),
-        }
-        params.userId = 0
-        await ctx.$api.updatePlaceOrder(params)
-        visible.value = false
-        ctx.$message.success("编辑成功")
-        emit("updateList")
-      } catch (error) {
-        console.log(error, "error")
-        ctx.$message(error.msg || error)
-      }
-      isBtnLoading.value = false
+const handleAdd = async () => {
+  isBtnLoading.value = true
+  try {
+    const params = {
+      ...dialogForm,
+      price:
+        Number(
+          utils.getListName(dialogForm.goodsId, props.goodsList, "price")
+        ) * Number(dialogForm.count),
     }
+    delete params.id
+    delete params.name
+    params.userId = 0
+    await $api.addPlaceOrder(params)
+    visible.value = false
+    $message.success("创建成功")
+    emit("updateList")
+  } catch (error) {
+    console.log(error, "error")
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
+}
 
-    return {
-      isBtnLoading,
-      goodStateList,
-      visible,
-      dialogForm,
-      dialogFormRules,
-      handleReset,
-      handleClose,
-      handleSubmit,
-      handleUpdate,
+const handleUpdate = async () => {
+  isBtnLoading.value = true
+  try {
+    const params = {
+      ...dialogForm,
+      id: props.curItem.id,
+      price:
+        Number(
+          utils.getListName(dialogForm.goodsId, props.goodsList, "price")
+        ) * Number(dialogForm.count),
     }
-  },
+    params.userId = 0
+    await ctx.$api.updatePlaceOrder(params)
+    visible.value = false
+    $message.success("编辑成功")
+    emit("updateList")
+  } catch (error) {
+    console.log(error, "error")
+    $message(error.msg || error)
+  }
+  isBtnLoading.value = false
 }
 </script>
 
