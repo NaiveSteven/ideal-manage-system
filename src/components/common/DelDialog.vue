@@ -1,3 +1,10 @@
+<!--
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-05-29 18:15:29
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-09-12 02:24:48
+-->
 <template>
   <div>
     <el-dialog :width="420" title="提示" v-model="visible">
@@ -15,53 +22,34 @@
     </el-dialog>
   </div>
 </template>
-<script>
-import { ref, watch, computed } from "vue";
-export default {
-  name: "DelDialog",
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true,
-    },
-    contents: {
-      type: Array,
-      derfault: () => [],
-    },
-    isBtnLoading: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props, { emit }) {
-    const visible = ref(false);
+<script lang="ts" setup>
+import { ref, watch, computed } from "vue"
+const props = defineProps<{
+  modelValue: boolean
+  contents: array
+  isBtnLoading: boolean
+}>()
+const emit = defineEmits(["update:modelValue", "delConfirm"])
+const visible = ref(false)
 
-    const content = computed(() => {
-      return props.contents.join(",");
-    });
+const content = computed(() => {
+  return props.contents.join(",")
+})
 
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        visible.value = newValue;
-      }
-    );
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    visible.value = newValue
+  }
+)
 
-    watch(visible, (newValue) => {
-      emit("update:modelValue", newValue);
-    });
+watch(visible, (newValue) => {
+  emit("update:modelValue", newValue)
+})
 
-    const handleSubmit = () => {
-      emit("delConfirm");
-    };
-
-    return {
-      visible,
-      handleSubmit,
-      content,
-    };
-  },
-};
+const handleSubmit = () => {
+  emit("delConfirm")
+}
 </script>
 
 <style lang="scss"></style>
