@@ -74,10 +74,10 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleClose">取 消</el-button>
+          <el-button @click="visible = false">取 消</el-button>
           <el-button
             type="primary"
-            :loading="isBtnLoading"
+            :loading="isConfirmBtnLoading"
             @click="handleSubmit"
             >确 定</el-button
           >
@@ -87,8 +87,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
-import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
+import type { ComponentInternalInstance } from 'vue'
+import { getCurrentInstance, reactive, ref, inject } from "vue"
+import { GOOD_STATE, DIALOG_MODE_EDIT } from "@/const"
+import { ElForm } from "element-plus"
+import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
+
 const props = defineProps<{
   modelValue: boolean
   mode: string
@@ -97,11 +102,8 @@ const props = defineProps<{
   goodsTypeList: array
 }>()
 const emit = defineEmits(["update:modelValue", "updateList"])
-const { ctx } = getCurrentInstance()
+const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
 const $api = inject("$api")
-const $message = inject("$message")
-const visible = ref(false)
-const isBtnLoading = ref(false)
 const goodStateList = ref(GOOD_STATE)
 const dialogForm = reactive({
   id: "",
@@ -186,82 +188,90 @@ const dialogFormRules = reactive({
   ],
 })
 
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    visible.value = newValue
-  }
+const { visible } = useShowDialog(
+  ctx,
+  props,
+  emit,
+  showDialogCallback,
+  notShowDialogCallback
 )
 
-watch(visible, (newValue) => {
-  if (!newValue) {
-    handleReset("form")
-  } else {
-    if (props.mode === DIALOG_MODE_EDIT) {
-      ctx.$nextTick(() => {
-        Object.assign(dialogForm, props.curItem)
-      })
-    }
+const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+  useDialogAddEdit(
+    ctx,
+    props,
+    emit,
+    ($api as { [index: string]: Function }).addGoods,
+    ($api as { [index: string]: Function }).updateGoods,
+    visible,
+    getAddParams,
+    getUpdateParams
+  )
+
+function showDialogCallback() {
+  if (props.mode === DIALOG_MODE_EDIT) {
+    ctx?.$nextTick(() => {
+      Object.assign(dialogForm, props.curItem)
+    })
   }
-  emit("update:modelValue", newValue)
-})
-
-const handleReset = (form) => {
-  ctx.$refs[form].resetFields()
 }
 
-const handleClose = () => {
-  visible.value = false
-  handleReset("form")
+function notShowDialogCallback() {
+  ;(ctx?.$refs.form as typeof ElForm).resetFields()
 }
 
-const handleSubmit = () => {
-  ctx.$refs.form.validate(async (valid) => {
-    if (valid) {
-      if (props.mode === DIALOG_MODE_ADD) {
-        handleAdd()
-      } else {
-        handleUpdate()
-      }
-    }
-  })
-}
-
-const handleAdd = async () => {
-  isBtnLoading.value = true
-  try {
-    const params = {
-      ...dialogForm,
-    }
-    params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
-    await $api.addGoods(params)
-    visible.value = false
-    $message.success("创建成功")
-    emit("updateList")
-  } catch (error) {
-    $message(error.msg || error)
+function getAddParams() {
+  const params = {
+    ...dialogForm,
   }
-  isBtnLoading.value = false
+  params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
+  return params
 }
 
-const handleUpdate = async () => {
-  isBtnLoading.value = true
-  try {
-    const params = { ...dialogForm, id: props.curItem.id }
-    params.goodsTypeId =
-      typeof dialogForm.goodsTypeId === "number"
-        ? dialogForm.goodsTypeId
-        : dialogForm.goodsTypeId.slice().pop()
-    await $api.updateGoods(params)
-    visible.value = false
-    $message.success("编辑成功")
-    emit("updateList")
-  } catch (error) {
-    console.log(error, "error")
-    $message(error.msg || error)
-  }
-  isBtnLoading.value = false
+function getUpdateParams() {
+  const params = { ...dialogForm, id: props.curItem.id }
+  params.goodsTypeId =
+    typeof dialogForm.goodsTypeId === "number"
+      ? dialogForm.goodsTypeId
+      : dialogForm.goodsTypeId.slice().pop()
+  return params
 }
+
+// const handleAdd = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = {
+//       ...dialogForm,
+//     }
+//     params.goodsTypeId = dialogForm.goodsTypeId.slice().pop()
+//     await $api.addGoods(params)
+//     visible.value = false
+//     $message.success("创建成功")
+//     emit("updateList")
+//   } catch (error) {
+//     $message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
+
+// const handleUpdate = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = { ...dialogForm, id: props.curItem.id }
+//     params.goodsTypeId =
+//       typeof dialogForm.goodsTypeId === "number"
+//         ? dialogForm.goodsTypeId
+//         : dialogForm.goodsTypeId.slice().pop()
+//     await $api.updateGoods(params)
+//     visible.value = false
+//     $message.success("编辑成功")
+//     emit("updateList")
+//   } catch (error) {
+//     console.log(error, "error")
+//     $message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
 </script>
 
 <style lang="scss"></style>

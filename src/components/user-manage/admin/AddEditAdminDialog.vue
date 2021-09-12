@@ -43,10 +43,10 @@
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleClose">取 消</el-button>
+          <el-button @click="visible = false">取 消</el-button>
           <el-button
             type="primary"
-            :loading="isBtnLoading"
+            :loading="isConfirmBtnLoading"
             @click="handleSubmit"
             >确 定</el-button
           >
@@ -55,170 +55,153 @@
     </el-dialog>
   </div>
 </template>
-<script>
-import { getCurrentInstance, reactive, ref, watch } from "vue"
-import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
-export default {
-  name: "AddEditModuleDialog",
-  props: {
-    modelValue: {
-      type: Boolean,
+<script lang="ts" setup>
+import type { ComponentInternalInstance } from 'vue'
+import { getCurrentInstance, reactive, inject } from "vue"
+import { DIALOG_MODE_EDIT } from "@/const"
+import { ElForm } from "element-plus"
+import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
+const props = defineProps<{
+  modelValue: boolean
+  mode: string
+  curItem: object
+  roleList: array
+}>()
+const emit = defineEmits(["update:modelValue", "updateList"])
+const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
+const $api = inject("$api") as { [index: string]: Function }
+const dialogForm = reactive({
+  id: "",
+  phone: "",
+  nickname: "",
+  username: "",
+  password: "",
+  roles: [],
+  avatar: "",
+})
+const dialogFormRules = reactive({
+  phone: [
+    {
       required: true,
+      trigger: "change",
     },
-    mode: {
-      type: String,
-      default: DIALOG_MODE_ADD,
+  ],
+  nickname: [
+    {
+      required: true,
+      trigger: "change",
     },
-    curItem: {
-      type: Object,
-      default: () => {},
+  ],
+  username: [
+    {
+      required: true,
+      trigger: "change",
     },
-    roleList: {
-      type: Array,
-      default: () => [],
+  ],
+  password: [
+    {
+      required: true,
+      trigger: "change",
     },
-  },
-  setup(props, { emit }) {
-    const { ctx } = getCurrentInstance()
-    const visible = ref(false)
-    const isBtnLoading = ref(false)
-    const dialogForm = reactive({
-      id: "",
-      phone: "",
-      nickname: "",
-      username: "",
-      password: "",
-      roles: [],
-      avatar: "",
+  ],
+  roles: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+  avatar: [
+    {
+      required: true,
+      trigger: "change",
+    },
+  ],
+})
+
+const { visible } = useShowDialog(
+  ctx,
+  props,
+  emit,
+  showDialogCallback,
+  notShowDialogCallback
+)
+
+const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+  useDialogAddEdit(
+    ctx,
+    props,
+    emit,
+    ($api as { [index: string]: Function }).addAdmin,
+    ($api as { [index: string]: Function }).updateAdmin,
+    visible,
+    getAddParams,
+    getUpdateParams
+  )
+
+function showDialogCallback() {
+  if (props.mode === DIALOG_MODE_EDIT) {
+    ctx?.$nextTick(() => {
+      Object.assign(dialogForm, props.curItem)
     })
-    const dialogFormRules = reactive({
-      phone: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      nickname: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      username: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      password: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      roles: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-      avatar: [
-        {
-          required: true,
-          trigger: "change",
-        },
-      ],
-    })
-
-    watch(
-      () => props.modelValue,
-      (newValue) => {
-        visible.value = newValue
-      }
-    )
-
-    watch(visible, (newValue) => {
-      if (!newValue) {
-        handleReset("form")
-      } else {
-        if (props.mode === DIALOG_MODE_EDIT) {
-          ctx.$nextTick(() => {
-            Object.assign(dialogForm, props.curItem)
-          })
-        }
-      }
-      emit("update:modelValue", newValue)
-    })
-
-    const handleReset = (form) => {
-      ctx.$refs[form].resetFields()
-    }
-
-    const handleClose = () => {
-      visible.value = false
-      handleReset("form")
-    }
-
-    const handleSubmit = () => {
-      ctx.$refs.form.validate(async (valid) => {
-        if (valid) {
-          if (props.mode === DIALOG_MODE_ADD) {
-            handleAdd()
-          } else {
-            handleUpdate()
-          }
-        }
-      })
-    }
-
-    const handleAdd = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = { ...dialogForm }
-        params.roles = params.roles.map((item) => item.toString())
-        await ctx.$api.addAdmin(params)
-        visible.value = false
-        ctx.$message.success("创建成功")
-        emit("updateList")
-      } catch (error) {
-        console.log(error, "error")
-        ctx.$message(error.msg || error)
-      }
-      isBtnLoading.value = false
-    }
-
-    const handleUpdate = async () => {
-      isBtnLoading.value = true
-      try {
-        const params = {
-          ...dialogForm,
-          id: props.curItem.id,
-          adminUserId: props.curItem.adminUserId,
-        }
-        params.roles = params.roles.map((item) => item.toString())
-        await ctx.$api.updateAdmin(params)
-        visible.value = false
-        ctx.$message.success("编辑成功")
-        emit("updateList")
-      } catch (error) {
-        console.log(error, "error")
-        ctx.$message(error.msg || error)
-      }
-      isBtnLoading.value = false
-    }
-
-    return {
-      isBtnLoading,
-      visible,
-      dialogForm,
-      dialogFormRules,
-      handleReset,
-      handleClose,
-      handleSubmit,
-      handleUpdate,
-    }
-  },
+  }
 }
+
+function notShowDialogCallback() {
+  ;(ctx?.$refs.form as typeof ElForm).resetFields()
+}
+
+function getAddParams() {
+  const params = { ...dialogForm }
+  params.roles = params.roles.map((item) => item.toString())
+  return params
+}
+
+function getUpdateParams() {
+  const params = {
+    ...dialogForm,
+    id: props.curItem.id,
+    adminUserId: props.curItem.adminUserId,
+  }
+  params.roles = params.roles.map((item) => item.toString())
+  return params
+}
+
+// const handleAdd = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = { ...dialogForm }
+//     params.roles = params.roles.map((item) => item.toString())
+//     await ctx.$api.addAdmin(params)
+//     visible.value = false
+//     ctx.$message.success("创建成功")
+//     emit("updateList")
+//   } catch (error) {
+//     console.log(error, "error")
+//     ctx.$message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
+
+// const handleUpdate = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = {
+//       ...dialogForm,
+//       id: props.curItem.id,
+//       adminUserId: props.curItem.adminUserId,
+//     }
+//     params.roles = params.roles.map((item) => item.toString())
+//     await ctx.$api.updateAdmin(params)
+//     visible.value = false
+//     ctx.$message.success("编辑成功")
+//     emit("updateList")
+//   } catch (error) {
+//     console.log(error, "error")
+//     ctx.$message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
 </script>
 
 <style lang="scss"></style>

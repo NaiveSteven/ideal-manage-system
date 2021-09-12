@@ -47,8 +47,11 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="handleClose">取 消</el-button>
-        <el-button type="primary" :loading="isBtnLoading" @click="handleSubmit"
+        <el-button @click="visible = false">取 消</el-button>
+        <el-button
+          type="primary"
+          :loading="isConfirmBtnLoading"
+          @click="handleSubmit"
           >确 定</el-button
         >
       </span>
@@ -56,9 +59,13 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
-import { GOOD_STATE, DIALOG_MODE_ADD, DIALOG_MODE_EDIT } from "@/const"
+import type { ComponentInternalInstance } from 'vue'
+import { getCurrentInstance, reactive, ref, inject } from "vue"
+import { GOOD_STATE, DIALOG_MODE_EDIT } from "@/const"
 import utils from "@/utils/utils"
+import { ElForm } from "element-plus"
+import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
 
 const props = defineProps<{
   modelValue: boolean
@@ -67,11 +74,8 @@ const props = defineProps<{
   goodsList: array
 }>()
 const emit = defineEmits(["update:modelValue", "updateList"])
-const { ctx } = getCurrentInstance()
+const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
 const $api = inject("$api")
-const $message = inject("$message")
-const visible = ref(false)
-const isBtnLoading = ref(false)
 const goodStateList = ref(GOOD_STATE)
 const dialogForm = reactive({
   id: "",
@@ -128,93 +132,109 @@ const dialogFormRules = reactive({
   ],
 })
 
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    visible.value = newValue
-  }
+const { visible } = useShowDialog(
+  ctx,
+  props,
+  emit,
+  showDialogCallback,
+  notShowDialogCallback
 )
 
-watch(visible, (newValue) => {
-  if (!newValue) {
-    handleReset("form")
-  } else {
-    if (props.mode === DIALOG_MODE_EDIT) {
-      ctx.$nextTick(() => {
-        Object.assign(dialogForm, props.curItem)
-      })
-    }
+const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+  useDialogAddEdit(
+    ctx,
+    props,
+    emit,
+    ($api as { [index: string]: Function }).addPlaceOrder,
+    ($api as { [index: string]: Function }).updatePlaceOrder,
+    visible,
+    getAddParams,
+    getUpdateParams
+  )
+
+function showDialogCallback() {
+  if (props.mode === DIALOG_MODE_EDIT) {
+    ctx?.$nextTick(() => {
+      Object.assign(dialogForm, props.curItem)
+    })
   }
-  emit("update:modelValue", newValue)
-})
-
-const handleReset = (form) => {
-  ctx.$refs[form].resetFields()
 }
 
-const handleClose = () => {
-  visible.value = false
-  handleReset("form")
+function notShowDialogCallback() {
+  ;(ctx?.$refs.form as typeof ElForm).resetFields()
 }
 
-const handleSubmit = () => {
-  ctx.$refs.form.validate(async (valid) => {
-    if (valid) {
-      if (props.mode === DIALOG_MODE_ADD) {
-        handleAdd()
-      } else {
-        handleUpdate()
-      }
-    }
-  })
-}
-
-const handleAdd = async () => {
-  isBtnLoading.value = true
-  try {
-    const params = {
-      ...dialogForm,
-      price:
-        Number(
-          utils.getListName(dialogForm.goodsId, props.goodsList, "price")
-        ) * Number(dialogForm.count),
-    }
-    delete params.id
-    delete params.name
-    params.userId = 0
-    await $api.addPlaceOrder(params)
-    visible.value = false
-    $message.success("创建成功")
-    emit("updateList")
-  } catch (error) {
-    console.log(error, "error")
-    $message(error.msg || error)
+function getAddParams() {
+  const params = {
+    ...dialogForm,
+    price:
+      Number(utils.getListName(dialogForm.goodsId, props.goodsList, "price")) *
+      Number(dialogForm.count),
   }
-  isBtnLoading.value = false
+  delete params.id
+  delete params.name
+  params.userId = 0
+  return params
 }
 
-const handleUpdate = async () => {
-  isBtnLoading.value = true
-  try {
-    const params = {
-      ...dialogForm,
-      id: props.curItem.id,
-      price:
-        Number(
-          utils.getListName(dialogForm.goodsId, props.goodsList, "price")
-        ) * Number(dialogForm.count),
-    }
-    params.userId = 0
-    await ctx.$api.updatePlaceOrder(params)
-    visible.value = false
-    $message.success("编辑成功")
-    emit("updateList")
-  } catch (error) {
-    console.log(error, "error")
-    $message(error.msg || error)
+function getUpdateParams() {
+  const params = {
+    ...dialogForm,
+    id: props.curItem.id,
+    price:
+      Number(utils.getListName(dialogForm.goodsId, props.goodsList, "price")) *
+      Number(dialogForm.count),
   }
-  isBtnLoading.value = false
+  params.userId = 0
+  return params
 }
+
+// const handleAdd = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = {
+//       ...dialogForm,
+//       price:
+//         Number(
+//           utils.getListName(dialogForm.goodsId, props.goodsList, "price")
+//         ) * Number(dialogForm.count),
+//     }
+//     delete params.id
+//     delete params.name
+//     params.userId = 0
+//     await $api.addPlaceOrder(params)
+//     visible.value = false
+//     $message.success("创建成功")
+//     emit("updateList")
+//   } catch (error) {
+//     console.log(error, "error")
+//     $message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
+
+// const handleUpdate = async () => {
+//   isBtnLoading.value = true
+//   try {
+//     const params = {
+//       ...dialogForm,
+//       id: props.curItem.id,
+//       price:
+//         Number(
+//           utils.getListName(dialogForm.goodsId, props.goodsList, "price")
+//         ) * Number(dialogForm.count),
+//     }
+//     params.userId = 0
+//     await ctx.$api.updatePlaceOrder(params)
+//     visible.value = false
+//     $message.success("编辑成功")
+//     emit("updateList")
+//   } catch (error) {
+//     console.log(error, "error")
+//     $message(error.msg || error)
+//   }
+//   isBtnLoading.value = false
+// }
 </script>
 
 <style lang="scss"></style>

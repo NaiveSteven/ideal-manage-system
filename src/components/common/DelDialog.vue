@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-05-29 18:15:29
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-12 02:24:48
+ * @LastEditTime: 2021-09-12 23:54:38
 -->
 <template>
   <div>
@@ -23,29 +23,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch, computed } from "vue"
+import type { ComponentInternalInstance } from 'vue'
+import { watch, computed, getCurrentInstance } from "vue"
+import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
 const props = defineProps<{
   modelValue: boolean
   contents: array
   isBtnLoading: boolean
 }>()
 const emit = defineEmits(["update:modelValue", "delConfirm"])
-const visible = ref(false)
+const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
 
 const content = computed(() => {
   return props.contents.join(",")
 })
 
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    visible.value = newValue
-  }
+const { visible } = useShowDialog(
+  ctx,
+  props,
+  emit,
+  () => {},
+  () => {}
 )
-
-watch(visible, (newValue) => {
-  emit("update:modelValue", newValue)
-})
 
 const handleSubmit = () => {
   emit("delConfirm")
