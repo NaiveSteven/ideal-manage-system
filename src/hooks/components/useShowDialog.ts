@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-12 22:03:38
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-12 22:37:38
+ * @LastEditTime: 2021-09-15 18:36:05
  */
 import type { ComponentPublicInstance } from 'vue'
 import { ref, watch } from 'vue';
@@ -23,6 +23,7 @@ export function useShowDialog(
     notShowDialogCallback: Function
 ) {
     const visible = ref<Boolean>(false)
+    const emits = defineEmits(["update:modelValue"])
 
     watch(
         () => props.modelValue,
@@ -37,7 +38,7 @@ export function useShowDialog(
         } else {
             showDialogCallback()
         }
-        emit("update:modelValue", newValue)
+        emits("update:modelValue", newValue)
     })
 
     return { visible }

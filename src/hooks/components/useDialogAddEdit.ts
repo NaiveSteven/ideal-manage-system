@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-12 17:01:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-12 23:11:46
+ * @LastEditTime: 2021-09-15 18:36:59
  */
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
@@ -28,6 +28,7 @@ export function useDialogAddEdit(
     getUpdateParams: Function,
 ) {
     const isConfirmBtnLoading = ref<Boolean>(false)
+    const emits = defineEmits(["updateList"])
 
     const handleSubmit = () => {
         (ctx.$refs.form as typeof ElForm).validate((valid: Boolean) => {
@@ -47,7 +48,7 @@ export function useDialogAddEdit(
             await asyncAddFunc(getAddParams())
             visible.value = false
             ElMessage.success("创建成功")
-            emit("updateList")
+            emits("updateList")
         } catch (error: Error) {
             ElMessage(error.msg || error)
         }
@@ -60,7 +61,7 @@ export function useDialogAddEdit(
             await asyncUpdateFunc(getUpdateParams())
             visible.value = false
             ElMessage.success("编辑成功")
-            emit("updateList")
+            emits("updateList")
         } catch (error: Error) {
             ElMessage(error.msg || error)
         }
