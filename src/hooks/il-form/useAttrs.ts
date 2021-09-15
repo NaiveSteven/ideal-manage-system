@@ -2,18 +2,18 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-14 19:35:00
- * @LastEditTime: 2021-09-14 19:47:58
+ * @LastEditTime: 2021-09-15 16:17:54
  * @LastEditors: mjqin
  */
 import { computed, getCurrentInstance } from "vue";
 import type { ComponentInternalInstance } from "vue";
 export interface ListItem {
-  label: String;
-  value: String | Number;
+  label: string;
+  value: string | number;
 }
 export interface Props {
-  value: String | Number | Array<any> | Object | Boolean;
-  prop: String;
+  value: string | number | Array<any> | Object | Boolean;
+  prop: string;
   attrs: Object;
   dynamicAttrs: Object;
   options: Array<ListItem>;
@@ -40,5 +40,5 @@ export const useAttrs = () => {
     return { ...ctx?.$attrs, ...props.attrs, ...props.dynamicAttrs };
   });
 
-  return { bindVal, attrsAll };
+  return { bindVal, attrsAll, props };
 };
