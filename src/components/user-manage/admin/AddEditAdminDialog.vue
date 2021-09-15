@@ -60,8 +60,8 @@ import type { ComponentInternalInstance } from 'vue'
 import { getCurrentInstance, reactive, inject } from "vue"
 import { DIALOG_MODE_EDIT } from "@/const"
 import { ElForm } from "element-plus"
-import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
-import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
+import { useShowDialog } from "@/hooks/components/useShowDialog"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
 const props = defineProps<{
   modelValue: boolean
   mode: string

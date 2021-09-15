@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-15 16:25:28
+ * @LastEditTime: 2021-09-15 19:47:36
  * @LastEditors: mjqin
 -->
 <template>
@@ -48,7 +48,7 @@ export interface FormItemConfigItem {
     [index: string]: string;
   };
   hide?: Function;
-  colGrid?: string;
+  colGrid?: Object;
 }
 
 export interface Props {

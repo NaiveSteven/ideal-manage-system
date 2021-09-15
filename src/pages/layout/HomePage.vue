@@ -107,6 +107,7 @@ import { drawWaterMark } from "@/utils/waterMark.ts"
 export default {
   name: "HomePage",
   components: { TreeMenu, BreadCrumb },
+  inject: ['$api', '$storage', '$request', '$message'],
   data() {
     return {
       isCollapse: false,

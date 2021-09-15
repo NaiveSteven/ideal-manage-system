@@ -36,6 +36,7 @@ import { ElMessage } from "element-plus";
 import storage from '@/utils/storage'
 export default {
   name: "LoginPage",
+  inject: ['$api'],
   data() {
     return {
       isBtnLoading: false,
@@ -65,6 +66,7 @@ export default {
     async login() {
       this.isBtnLoading = true;
       try {
+        console.log(this,'this')
         const res = await this.$api.login(this.user);
         storage.setItem('token', res.token)
         this.$router.push({ name: "home" });

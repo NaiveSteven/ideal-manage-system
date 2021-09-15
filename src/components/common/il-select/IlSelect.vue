@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:47:36
- * @LastEditTime: 2021-09-15 14:47:36
+ * @LastEditTime: 2021-09-15 20:02:39
  * @LastEditors: mjqin
 -->
 <template>
@@ -20,7 +20,7 @@
     />
   </el-select>
 </template>
-<script>
-import { useAttrs } from "@/hooks/components/il-form/useAttrs.ts";
+<script lang="ts" setup>
+import { useAttrs } from "@/hooks/il-form/useAttrs";
 const { bindVal, attrsAll, props } = useAttrs();
 </script>
