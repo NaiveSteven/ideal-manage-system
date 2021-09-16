@@ -2,29 +2,49 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-16 10:17:56
- * @LastEditTime: 2021-09-16 10:51:29
+ * @LastEditTime: 2021-09-16 14:15:35
  * @LastEditors: mjqin
 -->
 <template>
-  <!-- <il-container type="flex" direction="column">
+  <el-card>
+    <!-- <il-container type="flex" direction="column">
     <div>asdfasdf</div>
     <div>asdfasd</div>
   </il-container> -->
-  <il-form
-    :form-model="formModel"
-    :form-config="formConfig"
-    :options="optionsConfig"
-    :form-item-config="formItemConfig"
-  />
+    <il-form
+      :layout="layout"
+      :form-model="formModel"
+      :form-config="formConfig"
+      :options="optionsConfig"
+      :form-item-config="formItemConfig"
+    >
+      <template #button>
+        <el-button type="primary" @click="handleSubmit">提交</el-button>
+      </template>
+    </il-form>
+  </el-card>
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-const formModel = reactive({ activeName: "", activeArea: "", activeTime: [] });
+const formModel = reactive({ activeName: "", activeArea: "" });
 const optionsConfig = reactive({
   activeArea: [
     { label: "区域1", value: "1" },
     { label: "区域2", value: "2" },
   ],
+});
+const layout = reactive({
+  rowLayout: {
+    type: "flex",
+    direction: "row",
+  },
+  colLayout: {
+    xs: 24,
+    sm: 12,
+    md: 12,
+    lg: 8,
+    xl: 8,
+  },
 });
 const formConfig = reactive({
   ref: "form",
@@ -60,17 +80,11 @@ const formItemConfig = ref([
     },
   },
   {
-    type: "datepicker",
-    prop: "activeTime",
-    formItem: { label: "活动时间" },
-    attrs: {
-      type: "daterange",
-      startPlaceholder: "开始日期",
-      endPlaceholder: "结束日期",
-      format: "yyyy-MM-dd",
-      valueFormat: "yyyy-MM-dd",
-      clearable: true,
-    },
+    slot: "button",
   },
 ]);
+
+const handleSubmit = () => {
+  console.log(formModel, "saasdfasdfsadfsda");
+};
 </script>

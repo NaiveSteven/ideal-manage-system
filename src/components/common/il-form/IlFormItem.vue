@@ -2,18 +2,18 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 15:14:40
- * @LastEditTime: 2021-09-15 16:51:38
+ * @LastEditTime: 2021-09-16 14:15:29
  * @LastEditors: mjqin
 -->
 <template>
-  <el-form-item :prop="col.prop" v-bind="col.formItem" class="c-form-item">
+  <el-form-item :prop="col.prop" v-bind="col.formItem" class="il-form-item">
     <!-- <c-txt v-if="col.type === 'txt'" v-bind="col.attrs" :class="[col.attrs ? col.attrs.textClass : '', 'c-w-full']">{{ formModel[col.prop] }}</c-txt> -->
     <component
       v-bind="col.attrs"
       :is="getComponentName(col.type)"
       ref="component"
       :prop="col.prop"
-      :value="formModel[col.prop]"
+      v-model="formModel[col.prop]"
       :modifier="col.modifier"
       :dynamic-attrs="col.dynamicAttrs"
       :on="col.on"
@@ -53,3 +53,15 @@ const getComponentName = (type: string | Function) => {
   }
 };
 </script>
+<style lang="scss">
+.il-form-item {
+  .el-form-item__content {
+    .el-input,
+    .el-cascader,
+    .el-select,
+    .el-date-editor {
+      width: 100%;
+    }
+  }
+}
+</style>

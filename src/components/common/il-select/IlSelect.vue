@@ -2,17 +2,13 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:47:36
- * @LastEditTime: 2021-09-15 20:02:39
+ * @LastEditTime: 2021-09-16 11:42:06
  * @LastEditors: mjqin
 -->
 <template>
-  <el-select
-    v-model="bindVal"
-    v-bind="attrsAll"
-    v-on="on"
-  >
+  <el-select v-model="bindVal" v-bind="attrsAll" v-on="on">
     <el-option
-      v-for="(option,idx) in props.options"
+      v-for="(option, idx) in props.options"
       :key="`${option.value}_${idx}`"
       :label="option.label"
       :value="option.value"
@@ -21,6 +17,24 @@
   </el-select>
 </template>
 <script lang="ts" setup>
+export interface ListItem {
+  label: string;
+  value: string | number;
+}
+export interface Props {
+  modelValue?: string | number | Array<any> | Object | Boolean;
+  prop?: string;
+  attrs?: Object;
+  dynamicAttrs?: Object;
+  options?: Array<ListItem>;
+  on?: Object;
+}
+// import { Props } from "@/interfaces/Common";
 import { useAttrs } from "@/hooks/il-form/useAttrs";
-const { bindVal, attrsAll, props } = useAttrs();
+const props = withDefaults(defineProps<Props>(), {
+  on: () => ({} as Object),
+  modelValue: () => ({} as any),
+});
+const emit = defineEmits(["input", "update:modelValue"]);
+const { bindVal, attrsAll } = useAttrs(props, emit);
 </script>

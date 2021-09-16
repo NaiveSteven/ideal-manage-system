@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 16:57:15
- * @LastEditTime: 2021-09-16 10:51:15
+ * @LastEditTime: 2021-09-16 14:09:18
  * @LastEditors: mjqin
 -->
 <template>
@@ -48,7 +48,9 @@ const style = computed(() => {
   return {};
 });
 
+
 const classList = computed(() => {
+  console.log(props,'props')
   const ret: string[] = [];
   const pos = ["span", "offset", "pull", "push"] as const;
   pos.forEach((prop) => {

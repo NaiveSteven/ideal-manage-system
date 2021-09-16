@@ -2,14 +2,14 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-16 10:31:35
+ * @LastEditTime: 2021-09-16 14:12:37
  * @LastEditors: mjqin
 -->
 <template>
   <el-form v-bind="formConfig" ref="form" :model="formModel">
     <div class="c-form">
       <il-container class="c-form__row" v-bind="rowLayout">
-        <il-col v-for="(col, colIndex) in formatedSchema" v-bind="getColLayout(col)" :key="colIndex">
+        <il-col v-for="(col, colIndex) in formatedSchema" v-bind="colLayout" :key="colIndex">
           <slot v-if="col.slot" :name="col.slot" />
           <template v-else>
             <!-- 具体组件的配置项目 -->
@@ -39,24 +39,23 @@ export interface Layout {
 }
 
 export interface FormItemConfigItem {
-  type: string;
-  prop: string;
-  formItem: {
+  type?: string;
+  prop?: string;
+  formItem?: {
     [index: string]: string;
   };
   attrs?: {
     [index: string]: string;
   };
   hide?: Function;
-  colGrid?: Object;
 }
 
 export interface Props {
   layout?: Layout;
-  formConfig: Object;
-  formItemConfig: Array<FormItemConfigItem>;
-  formModel: Object;
-  options: Object;
+  formConfig?: Object;
+  formItemConfig?: Array<FormItemConfigItem>;
+  formModel?: Object;
+  options?: Object;
 }
 
 const attrs = useAttrs()
@@ -67,8 +66,8 @@ const props = withDefaults(defineProps<Props>(), {
       rowLayout: {
         gutter: 0,
         interval: 0,
-        justify: "start",
-        direction: "row",
+        // justify: "start",
+        // direction: "row",
       },
       colLayout: {
         xs: 24,
@@ -109,13 +108,15 @@ const formatedSchema = computed(() => {
   return _schema.filter((item: FormItemConfigItem) => !isHide(item));
 });
 
-const getColLayout = (col: FormItemConfigItem) => {
-  return { ...col.colGrid, ...colLayout };
-};
-
 function isHide(item: FormItemConfigItem) {
   return typeof item.hide === "function" ? item.hide() : item.hide;
 }
+
+
+// const getColLayout = (col: FormItemConfigItem) => {
+//   console.log({...colLayout}, 'colLayoutcolLayoutcolLayoutcolLayoutcolLayout')
+//   return { ...colLayout };
+// };
 
 // resetFields(...args) {
 //   return this.$refs.form.resetFields(...args)
