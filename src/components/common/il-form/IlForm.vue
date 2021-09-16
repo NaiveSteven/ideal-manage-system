@@ -2,14 +2,14 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-15 19:47:36
+ * @LastEditTime: 2021-09-16 10:31:35
  * @LastEditors: mjqin
 -->
 <template>
   <el-form v-bind="formConfig" ref="form" :model="formModel">
     <div class="c-form">
-      <c-container class="c-form__row" v-bind="rowLayout">
-        <c-col v-for="(col, colIndex) in formatedSchema" v-bind="getColLayout(col)" :key="colIndex">
+      <il-container class="c-form__row" v-bind="rowLayout">
+        <il-col v-for="(col, colIndex) in formatedSchema" v-bind="getColLayout(col)" :key="colIndex">
           <slot v-if="col.slot" :name="col.slot" />
           <template v-else>
             <!-- 具体组件的配置项目 -->
@@ -23,8 +23,8 @@
               v-on="attrs"
             />
           </template>
-        </c-col>
-      </c-container>
+        </il-col>
+      </il-container>
     </div>
   </el-form>
 </template>
@@ -52,7 +52,7 @@ export interface FormItemConfigItem {
 }
 
 export interface Props {
-  layout: Layout;
+  layout?: Layout;
   formConfig: Object;
   formItemConfig: Array<FormItemConfigItem>;
   formModel: Object;

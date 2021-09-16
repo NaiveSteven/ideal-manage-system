@@ -2,25 +2,28 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 16:57:15
- * @LastEditTime: 2021-09-15 17:42:51
+ * @LastEditTime: 2021-09-16 10:51:15
  * @LastEditors: mjqin
 -->
+<template>
+  <div :class="['el-col', classList]" :style="style">
+    <slot />
+  </div>
+</template>
 <script lang="ts" setup>
-import { computed, useSlots, h, inject } from "vue";
+import { computed, inject } from "vue";
 export interface Props {
-  span: number;
-  tag: string;
-  offset: number;
-  pull: number;
-  push: number;
-  xs: number | object | string;
-  sm: number | object | string;
-  md: number | object | string;
-  lg: number | object | string;
-  xl: number | object | string;
+  span?: number;
+  tag?: string;
+  offset?: number;
+  pull?: number;
+  push?: number;
+  xs?: number | object | string;
+  sm?: number | object | string;
+  md?: number | object | string;
+  lg?: number | object | string;
+  xl?: number | object | string;
 }
-
-const slots = useSlots();
 
 const props = withDefaults(defineProps<Props>(), {
   span: 24,
@@ -73,12 +76,4 @@ const classList = computed(() => {
 
   return ret;
 });
-h(
-  props.tag,
-  {
-    class: ["el-col", classList.value],
-    style: style.value,
-  },
-  slots.default?.()
-);
 </script>
