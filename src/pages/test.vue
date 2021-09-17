@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-16 10:17:56
- * @LastEditTime: 2021-09-17 14:53:20
+ * @LastEditTime: 2021-09-17 18:47:46
  * @LastEditors: mjqin
 -->
 <template>
@@ -12,6 +12,7 @@
     <div>asdfasd</div>
   </il-container> -->
     <il-form
+      ref="testForm"
       :layout="layout"
       :form-model="formModel"
       :form-config="formConfig"
@@ -20,12 +21,16 @@
     >
       <template #button>
         <el-button type="primary" @click="handleSubmit">提交</el-button>
+        <el-button type="primary" @click="handleReset">重置</el-button>
       </template>
     </il-form>
   </el-card>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, unref } from "vue";
+import { ElForm } from "element-plus";
+
+const testForm = ref(null);
 const formModel = reactive({ activeName: "", activeArea: "", active1: "", active2: "", active3: "", active4: "" });
 const optionsConfig = reactive({
   activeArea: [
@@ -47,7 +52,6 @@ const layout = reactive({
   },
 });
 const formConfig = reactive({
-  ref: "form",
   labelWidth: "100px",
   size: "mini",
   class: "form",
@@ -80,7 +84,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log('active1');
+        console.log("active1");
       },
     },
   },
@@ -94,7 +98,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log('active2');
+        console.log("active2");
       },
     },
   },
@@ -108,7 +112,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log('active3');
+        console.log("active3");
       },
     },
   },
@@ -122,7 +126,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log('active4');
+        console.log("active4");
       },
     },
   },
@@ -142,5 +146,9 @@ const formItemConfig = ref([
 
 const handleSubmit = () => {
   console.log(formModel, "saasdfasdfsadfsda");
+};
+
+const handleReset = async () => {
+  (unref(testForm) as typeof ElForm).resetFields();
 };
 </script>

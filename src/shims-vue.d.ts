@@ -6,3 +6,5 @@ declare module '*.vue' {
 declare module '*lodash'
 
 declare type EmitType = (event: any, ...args: any[]) => void;
+
+declare type Nullable<T> = T | null;

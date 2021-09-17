@@ -2,11 +2,11 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-17 15:43:59
+ * @LastEditTime: 2021-09-17 18:45:23
  * @LastEditors: mjqin
 -->
 <template>
-  <el-form v-bind="formConfig" ref="form" :model="formModel">
+  <el-form v-bind="formConfig" ref="formRefs" :model="formModel">
     <div class="c-form">
       <il-container class="c-form__row" v-bind="rowLayout">
         <il-col v-for="(col, colIndex) in formatedSchema" v-bind="colLayout" :key="colIndex">
@@ -31,8 +31,9 @@
 <script lang="ts" setup>
 import { cloneDeep } from "lodash";
 import IlFormItem from "./IlFormItem.vue";
-import { computed, useAttrs } from "vue";
+import { computed, useAttrs, defineExpose } from "vue";
 import { FormItemConfigItem } from "@/interfaces/IlForm";
+import { useFormMethods } from "@/hooks/il-form/useFormMethods";
 
 export interface Layout {
   rowLayout: Object;
@@ -48,6 +49,10 @@ export interface Props {
 }
 
 const attrs = useAttrs();
+
+// const formRefs = ref<Nullable<FormActionType>>(null);
+
+const { validate, validateField, resetFields, scrollToField, clearValidate } = useFormMethods();
 
 const props = withDefaults(defineProps<Props>(), {
   layout: () => {
@@ -101,21 +106,11 @@ function isHide(item: FormItemConfigItem) {
   return typeof item.hide === "function" ? item.hide() : item.hide;
 }
 
-// const getColLayout = (col: FormItemConfigItem) => {
-//   console.log({...colLayout}, 'colLayoutcolLayoutcolLayoutcolLayoutcolLayout')
-//   return { ...colLayout };
-// };
-
-// resetFields(...args) {
-//   return this.$refs.form.resetFields(...args)
-// },
-// validate(...args) {
-//   return this.$refs.form.validate(...args)
-// },
-// validateField(...args) {
-//   return this.$refs.form.validateField(...args)
-// },
-// clearValidate(...args) {
-//   return this.$refs.form.clearValidate(...args)
-// }
+defineExpose({
+  validate,
+  validateField,
+  resetFields,
+  scrollToField,
+  clearValidate,
+});
 </script>

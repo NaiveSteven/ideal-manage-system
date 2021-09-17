@@ -46,7 +46,7 @@
     </el-card>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import { AddEditModuleDialog } from "@/components";
 import { DelDialog } from "@/components";
 import { getCurrentInstance, onMounted, reactive, ref, inject } from "vue";
