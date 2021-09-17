@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-12 22:03:38
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-16 14:21:19
+ * @LastEditTime: 2021-09-17 14:36:25
  */
 import type { ComponentPublicInstance } from 'vue'
 import { ref, watch } from 'vue';
@@ -17,12 +17,11 @@ interface CommonDialogProps {
 export function useShowDialog(
     ctx: ComponentPublicInstance,
     props: CommonDialogProps,
-    emit: any,
+    emit: EmitType,
     showDialogCallback: Function,
     notShowDialogCallback: Function
 ) {
     const visible = ref<Boolean>(false)
-    // const emits = defineEmits(["update:modelValue"])
 
     watch(
         () => props.modelValue,

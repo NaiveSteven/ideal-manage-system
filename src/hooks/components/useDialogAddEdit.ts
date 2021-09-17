@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-12 17:01:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-16 10:08:26
+ * @LastEditTime: 2021-09-17 14:35:01
  */
 import type { ComponentPublicInstance, Ref } from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
@@ -19,7 +19,7 @@ interface CommonDialogProps {
 export function useDialogAddEdit(
     ctx: ComponentPublicInstance,
     props: CommonDialogProps,
-    emit: any,
+    emit: EmitType,
     asyncAddFunc: Function,
     asyncUpdateFunc: Function,
     visible: Ref<Boolean>,

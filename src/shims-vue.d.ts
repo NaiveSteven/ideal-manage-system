@@ -4,3 +4,5 @@ declare module '*.vue' {
   export default component
 }
 declare module '*lodash'
+
+declare type EmitType = (event: any, ...args: any[]) => void;

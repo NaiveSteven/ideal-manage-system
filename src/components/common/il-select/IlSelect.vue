@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:47:36
- * @LastEditTime: 2021-09-16 11:42:06
+ * @LastEditTime: 2021-09-17 14:45:50
  * @LastEditors: mjqin
 -->
 <template>
@@ -20,6 +20,7 @@
 export interface ListItem {
   label: string;
   value: string | number;
+  disabled?: boolean;
 }
 export interface Props {
   modelValue?: string | number | Array<any> | Object | Boolean;
@@ -35,6 +36,6 @@ const props = withDefaults(defineProps<Props>(), {
   on: () => ({} as Object),
   modelValue: () => ({} as any),
 });
-const emit = defineEmits(["input", "update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "input"]);
 const { bindVal, attrsAll } = useAttrs(props, emit);
 </script>

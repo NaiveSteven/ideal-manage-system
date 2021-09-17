@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 11:17:00
- * @LastEditTime: 2021-09-16 13:35:36
+ * @LastEditTime: 2021-09-17 14:31:10
  * @LastEditors: mjqin
 -->
 <template>
@@ -21,11 +21,10 @@ export interface Props {
   options?: Array<ListItem>;
   on?: Object;
 }
-// import { Props } from "@/interfaces/Common";
+
 import { useAttrs } from "@/hooks/il-form/useAttrs";
 const props = withDefaults(defineProps<Props>(), {
   on: () => ({} as Object),
-  // modelValue: () => ({} as any),
 });
 const emit = defineEmits(["input", "update:modelValue"]);
 const { bindVal, attrsAll } = useAttrs(props, emit);
