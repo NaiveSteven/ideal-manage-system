@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-16 10:17:56
- * @LastEditTime: 2021-09-16 14:15:35
+ * @LastEditTime: 2021-09-17 14:53:20
  * @LastEditors: mjqin
 -->
 <template>
@@ -26,7 +26,7 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-const formModel = reactive({ activeName: "", activeArea: "" });
+const formModel = reactive({ activeName: "", activeArea: "", active1: "", active2: "", active3: "", active4: "" });
 const optionsConfig = reactive({
   activeArea: [
     { label: "区域1", value: "1" },
@@ -67,6 +67,62 @@ const formItemConfig = ref([
     on: {
       input: () => {
         console.log(123);
+      },
+    },
+  },
+  {
+    type: "input",
+    prop: "active1",
+    formItem: { label: "活动名称" },
+    attrs: {
+      placeholder: "请输入活动名称",
+      clearable: true,
+    },
+    on: {
+      input: () => {
+        console.log('active1');
+      },
+    },
+  },
+  {
+    type: "input",
+    prop: "active2",
+    formItem: { label: "活动名称" },
+    attrs: {
+      placeholder: "请输入活动名称",
+      clearable: true,
+    },
+    on: {
+      input: () => {
+        console.log('active2');
+      },
+    },
+  },
+  {
+    type: "input",
+    prop: "active3",
+    formItem: { label: "活动名称" },
+    attrs: {
+      placeholder: "请输入活动名称",
+      clearable: true,
+    },
+    on: {
+      input: () => {
+        console.log('active3');
+      },
+    },
+  },
+  {
+    type: "input",
+    prop: "active4",
+    formItem: { label: "活动名称" },
+    attrs: {
+      placeholder: "请输入活动名称",
+      clearable: true,
+    },
+    on: {
+      input: () => {
+        console.log('active4');
       },
     },
   },

@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
   items: "normal",
   content: "normal",
   direction: "row",
-  wrap: "nowrap",
+  wrap: "wrap",
 });
 
 const gutter = computed(() => props.gutter);

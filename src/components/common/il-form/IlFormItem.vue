@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 15:14:40
- * @LastEditTime: 2021-09-16 14:15:29
+ * @LastEditTime: 2021-09-17 15:39:32
  * @LastEditors: mjqin
 -->
 <template>
@@ -26,17 +26,27 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import { FormItemConfigItem } from "@/interfaces/IlForm";
+import { ListItem } from "@/interfaces/Common";
+
+export interface FormModel {
+  [index: string]: string;
+}
+
+export interface Options {
+  [index: string]: ListItem[];
+}
 
 export interface Props {
-  formModel: Object;
-  options: Object;
-  col: Object;
+  formModel: FormModel;
+  options: Options;
+  col: FormItemConfigItem;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  formModel: () => ({} as Object),
-  options: () => ({} as Object),
-  col: () => ({} as Object),
+  formModel: () => ({} as FormModel),
+  options: () => ({} as Options),
+  col: () => ({} as FormItemConfigItem),
 });
 
 const builtInNames = ref<string[]>(["input", "select"]);

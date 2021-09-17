@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-16 14:12:37
+ * @LastEditTime: 2021-09-17 15:43:59
  * @LastEditors: mjqin
 -->
 <template>
@@ -32,22 +32,11 @@
 import { cloneDeep } from "lodash";
 import IlFormItem from "./IlFormItem.vue";
 import { computed, useAttrs } from "vue";
+import { FormItemConfigItem } from "@/interfaces/IlForm";
 
 export interface Layout {
   rowLayout: Object;
   colLayout: Object;
-}
-
-export interface FormItemConfigItem {
-  type?: string;
-  prop?: string;
-  formItem?: {
-    [index: string]: string;
-  };
-  attrs?: {
-    [index: string]: string;
-  };
-  hide?: Function;
 }
 
 export interface Props {
@@ -58,7 +47,7 @@ export interface Props {
   options?: Object;
 }
 
-const attrs = useAttrs()
+const attrs = useAttrs();
 
 const props = withDefaults(defineProps<Props>(), {
   layout: () => {
@@ -66,8 +55,8 @@ const props = withDefaults(defineProps<Props>(), {
       rowLayout: {
         gutter: 0,
         interval: 0,
-        // justify: "start",
-        // direction: "row",
+        justify: "start",
+        direction: "row",
       },
       colLayout: {
         xs: 24,
@@ -111,7 +100,6 @@ const formatedSchema = computed(() => {
 function isHide(item: FormItemConfigItem) {
   return typeof item.hide === "function" ? item.hide() : item.hide;
 }
-
 
 // const getColLayout = (col: FormItemConfigItem) => {
 //   console.log({...colLayout}, 'colLayoutcolLayoutcolLayoutcolLayoutcolLayout')
