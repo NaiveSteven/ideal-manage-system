@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-07 23:36:42
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-15 18:21:37
+ * @LastEditTime: 2021-09-19 00:57:55
  */
 import CategorySelector from "./CategorySelector.vue";
 import DelDialog from "./DelDialog.vue";
@@ -11,11 +11,12 @@ import IlCol from "./il-col/IlCol.vue";
 import IlContainer from "./il-container/IlContainer.vue";
 import IlForm from "./il-form/IlForm.vue";
 import IlInput from "./il-input/IlInput.vue";
+import IlRadio from './il-radio/IlRadio.vue';
 import IlSelect from "./il-select/IlSelect.vue";
 import type { App } from "vue";
 
-const components = [IlCol, IlContainer, IlForm, IlInput, IlSelect];
-const componentNames = ["IlCol", "IlContainer", "IlForm", "IlInput", "IlSelect"];
+const components = [IlCol, IlContainer, IlForm, IlInput, IlSelect, IlRadio];
+const componentNames = ["IlCol", "IlContainer", "IlForm", "IlInput", "IlSelect", 'IlRadio'];
 
 const install = (app: App) => {
   components.forEach((component, index) => {

@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 15:14:40
- * @LastEditTime: 2021-09-17 15:39:32
+ * @LastEditTime: 2021-09-19 01:15:45
  * @LastEditors: mjqin
 -->
 <template>
@@ -25,43 +25,43 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { FormItemConfigItem } from "@/interfaces/IlForm";
-import { ListItem } from "@/interfaces/Common";
+import { ref } from "vue"
+import { FormItemConfigItem } from "@/interfaces/IlForm"
+import { ListItem } from "@/interfaces/Common"
 
 export interface FormModel {
-  [index: string]: string;
+  [index: string]: string
 }
 
 export interface Options {
-  [index: string]: ListItem[];
+  [index: string]: ListItem[]
 }
 
 export interface Props {
-  formModel: FormModel;
-  options: Options;
-  col: FormItemConfigItem;
+  formModel: FormModel
+  options: Options
+  col: FormItemConfigItem
 }
 
 const props = withDefaults(defineProps<Props>(), {
   formModel: () => ({} as FormModel),
   options: () => ({} as Options),
   col: () => ({} as FormItemConfigItem),
-});
+})
 
-const builtInNames = ref<string[]>(["input", "select"]);
+const builtInNames = ref<string[]>(["input", "select", "radio"])
 
 const getComponentName = (type: string | Function) => {
-  type = typeof type === "function" ? type() : type;
+  type = typeof type === "function" ? type() : type
 
   if (builtInNames.value.includes(type as string)) {
     // 内置组件
-    return "il-" + type;
+    return "il-" + type
   } else {
     // 外部组件
-    return type;
+    return type
   }
-};
+}
 </script>
 <style lang="scss">
 .il-form-item {

@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-16 10:17:56
- * @LastEditTime: 2021-09-19 00:07:06
+ * @LastEditTime: 2021-09-19 01:09:30
  * @LastEditors: mjqin
 -->
 <template>
@@ -27,17 +27,29 @@
   </el-card>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, unref } from "vue";
-import { ElForm, ElMessage } from "element-plus";
+import { reactive, ref, unref } from "vue"
+import { ElForm, ElMessage } from "element-plus"
 
-const testForm = ref(null);
-const formModel = reactive({ activeName: "", activeArea: "", active1: "", active2: "", active3: "", active4: "" });
+const testForm = ref(null)
+const formModel = reactive({
+  activeName: "",
+  activeArea: "",
+  active1: "",
+  active2: "",
+  active3: "",
+  active4: "",
+  radio1: "",
+})
 const optionsConfig = reactive({
   activeArea: [
     { label: "区域1", value: "1" },
     { label: "区域2", value: "2" },
   ],
-});
+  radio1: [
+    { label: "区域1", value: "1" },
+    { label: "区域2", value: "2" },
+  ],
+})
 const layout = reactive({
   rowLayout: {
     type: "flex",
@@ -50,15 +62,17 @@ const layout = reactive({
     lg: 8,
     xl: 8,
   },
-});
+})
 const formConfig = reactive({
   labelWidth: "100px",
   size: "mini",
   class: "form",
   rules: {
-    activeName: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
+    activeName: [
+      { required: true, message: "请输入活动名称", trigger: "blur" },
+    ],
   },
-});
+})
 const formItemConfig = ref([
   {
     type: "input",
@@ -70,7 +84,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log(123);
+        console.log(123)
       },
     },
   },
@@ -84,7 +98,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log("active1");
+        console.log("active1")
       },
     },
   },
@@ -98,7 +112,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log("active2");
+        console.log("active2")
       },
     },
   },
@@ -112,7 +126,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log("active3");
+        console.log("active3")
       },
     },
   },
@@ -126,7 +140,7 @@ const formItemConfig = ref([
     },
     on: {
       input: () => {
-        console.log("active4");
+        console.log("active4")
       },
     },
   },
@@ -140,22 +154,27 @@ const formItemConfig = ref([
     },
   },
   {
+    type: "radio",
+    prop: "radio1",
+    formItem: { label: "活动区域" },
+  },
+  {
     slot: "button",
   },
-]);
+])
 
 const handleSubmit = () => {
-  (unref(testForm) as typeof ElForm).validate((val: boolean) => {
+  ;(unref(testForm) as typeof ElForm).validate((val: boolean) => {
     if (val) {
-      ElMessage.success('校验成功')
+      ElMessage.success("校验成功")
     } else {
-      ElMessage.error('校验失败')
+      ElMessage.error("校验失败")
     }
   })
-  console.log(formModel, "saasdfasdfsadfsda");
-};
+  console.log(formModel, "saasdfasdfsadfsda")
+}
 
 const handleReset = async () => {
-  (unref(testForm) as typeof ElForm).resetFields();
-};
+  ;(unref(testForm) as typeof ElForm).resetFields()
+}
 </script>
