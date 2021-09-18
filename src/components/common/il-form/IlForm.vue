@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:51:46
- * @LastEditTime: 2021-09-17 18:45:23
+ * @LastEditTime: 2021-09-19 00:04:58
  * @LastEditors: mjqin
 -->
 <template>
@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { cloneDeep } from "lodash";
 import IlFormItem from "./IlFormItem.vue";
-import { computed, useAttrs, defineExpose } from "vue";
+import { computed, useAttrs } from "vue";
 import { FormItemConfigItem } from "@/interfaces/IlForm";
 import { useFormMethods } from "@/hooks/il-form/useFormMethods";
 

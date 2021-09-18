@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-16 10:17:56
- * @LastEditTime: 2021-09-17 18:47:46
+ * @LastEditTime: 2021-09-19 00:07:06
  * @LastEditors: mjqin
 -->
 <template>
@@ -28,7 +28,7 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref, unref } from "vue";
-import { ElForm } from "element-plus";
+import { ElForm, ElMessage } from "element-plus";
 
 const testForm = ref(null);
 const formModel = reactive({ activeName: "", activeArea: "", active1: "", active2: "", active3: "", active4: "" });
@@ -145,6 +145,13 @@ const formItemConfig = ref([
 ]);
 
 const handleSubmit = () => {
+  (unref(testForm) as typeof ElForm).validate((val: boolean) => {
+    if (val) {
+      ElMessage.success('校验成功')
+    } else {
+      ElMessage.error('校验失败')
+    }
+  })
   console.log(formModel, "saasdfasdfsadfsda");
 };
 
