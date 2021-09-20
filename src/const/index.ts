@@ -116,12 +116,19 @@ export const MENU_DATA: MenuItem[] = [
         ],
     },
     {
-      menuName: '测试',
-      name: 'test',
-      icon: 'el-icon-shopping-cart-full',
-      permission: 'menu.home',
-      path: '/ideal/test'
-    }
+        menuName: '测试',
+        name: 'test',
+        icon: 'el-icon-shopping-cart-full',
+        permission: 'menu.home',
+        path: '/ideal/test'
+    },
+    {
+        menuName: '表格测试',
+        name: 'testTable',
+        icon: 'el-icon-shopping-cart-full',
+        permission: 'menu.home',
+        path: '/ideal/testTable'
+    },
     // {
     //     menuName: '爆款管理',
     //     name: 'explosion-manage',

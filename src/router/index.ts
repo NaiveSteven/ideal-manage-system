@@ -112,14 +112,23 @@ const routes = [
                 component: () => import('../pages/order-manage/PlaceOrderDetailPage.vue')
             },
             {
-              name: 'test',
-              path: 'ideal/test',
-              meta: {
-                  title: '组件测试',
-                  permission: '',
-              },
-              component: () => import('../pages/test.vue')
-          },
+                name: 'test',
+                path: 'ideal/test',
+                meta: {
+                    title: '组件测试',
+                    permission: '',
+                },
+                component: () => import('../pages/test.vue')
+            },
+            {
+                name: 'testTable',
+                path: 'ideal/testTable',
+                meta: {
+                    title: '表格测试',
+                    permission: '',
+                },
+                component: () => import('../pages/testTable.vue')
+            },
         ]
     },
     {
