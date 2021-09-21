@@ -2,7 +2,7 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 15:14:40
- * @LastEditTime: 2021-09-19 01:15:45
+ * @LastEditTime: 2021-09-22 00:20:54
  * @LastEditors: mjqin
 -->
 <template>
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, unref } from "vue"
 import { FormItemConfigItem } from "@/interfaces/IlForm"
 import { ListItem } from "@/interfaces/Common"
 
@@ -54,7 +54,7 @@ const builtInNames = ref<string[]>(["input", "select", "radio"])
 const getComponentName = (type: string | Function) => {
   type = typeof type === "function" ? type() : type
 
-  if (builtInNames.value.includes(type as string)) {
+  if (unref(builtInNames).includes(type as string)) {
     // 内置组件
     return "il-" + type
   } else {

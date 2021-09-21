@@ -3,11 +3,15 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:58:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-21 04:29:15
+ * @LastEditTime: 2021-09-22 01:09:16
 -->
 <template>
   <el-card>
-    <il-table :data="tableData" :tableCols="tableCols" @selection-change="handleSelectionChange"/>
+    <il-table
+      :data="tableData"
+      :tableCols="tableCols"
+      @selection-change="handleSelectionChange"
+    />
   </el-card>
 </template>
 
@@ -68,8 +72,46 @@ const tableCols = ref([
       input: () => console.log("22222"),
     },
   },
+  {
+    type: "button",
+    label: "操作1",
+    btnList: [
+      {
+        label: "按钮1",
+        type: "primary",
+        size: "mini",
+      },
+      {
+        label: "按钮2",
+        type: "default",
+        size: "mini",
+      },
+    ],
+  },
+  {
+    type: "button",
+    label: "操作2",
+    btnList: [
+      {
+        whenShowCb: () => true,
+        label: "按钮3",
+        type: "primary",
+        size: "mini",
+        click: () => console.log('asfasfsadfasdf')
+      },
+      {
+        whenShowCb: () => true,
+        label: "按钮4",
+        type: "default",
+        size: "mini",
+      },
+    ],
+  },
 ])
 const handleSelectionChange = (data: any) => {
-    console.log(data,'handleSelectionChangehandleSelectionChangehandleSelectionChange')
+  console.log(
+    data,
+    "handleSelectionChangehandleSelectionChangehandleSelectionChange"
+  )
 }
 </script>
