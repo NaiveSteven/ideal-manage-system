@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:22:50
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-22 01:29:43
+ * @LastEditTime: 2021-09-22 10:58:57
 -->
 <template>
   <el-table-column
@@ -30,7 +30,7 @@
             :key="index"
             :disabled="btn.isDisabled && btn.isDisabled(scope.row)"
             v-bind="btn"
-            @click="btn.click(scope.row)"
+            @click="btn.click && btn.click(scope.row)"
           >
             {{ btn.label }}
           </el-button>
@@ -43,6 +43,7 @@
         :is="getComponentName(props.tableCol.type)"
         v-model="scope.row[props.tableCol.prop]"
         :on="props.tableCol.on"
+        :options="props.tableCol.options"
       />
     </template>
   </el-table-column>
@@ -61,6 +62,7 @@ export interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   tableCol: () => {},
+  options: () => []
 })
 
 const builtInNames = ref<string[]>(["input", "select", "radio"])
