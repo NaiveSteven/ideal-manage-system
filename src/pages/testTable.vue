@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:58:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-25 22:51:22
+ * @LastEditTime: 2021-09-25 23:09:51
 -->
 <template>
   <el-card>
@@ -12,47 +12,61 @@
       :tableCols="tableCols"
       @selection-change="handleSelectionChange"
     >
-      <template #phone="{row, index}">
-        <span>phone:{{row.phone + index}}</span>
+      <template #phone="{ row, index }">
+        <span>phone:{{ row.phone + index }}</span>
       </template>
-      <template #phone1="{column, index}">
-        <span>自定义标题:{{index}}</span>
+      <template #phone1="{ index }">
+        <span>自定义标题:{{ index }}</span>
       </template>
     </il-table>
+    <il-table
+      ref="testTable"
+      :data="tableData"
+      :tableCols="tableCols"
+      @selection-change="handleSelectionChange"
+    />
+    <el-button type="primary" @click="handleClear">清除选择</el-button>
   </el-card>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, unref } from "vue"
+import { ElTable } from "element-plus"
+
+const testTable = ref(null)
 const tableData = ref([
   {
     id: 1,
     name: "nihao1",
     address: "address1",
     username: "username1",
-    phone: 'phone1'
+    phone: "phone1",
+    select: "1",
   },
   {
     id: 2,
     name: "nihao2",
     address: "address2",
     username: "username2",
-    phone: 'phone2'
+    phone: "phone2",
+    select: "2",
   },
   {
     id: 3,
     name: "nihao3",
     address: "address3",
     username: "username3",
-    phone: 'phone3'
+    phone: "phone3",
+    select: "3",
   },
   {
     id: 4,
     name: "nihao4",
     address: "address4",
     username: "username4",
-    phone: 'phone4'
-  }
+    phone: "phone4",
+    select: "4",
+  },
 ])
 
 const tableCols = ref([
@@ -72,8 +86,38 @@ const tableCols = ref([
     label: "地址",
   },
   {
-    slot: 'phone',
-    headerSlot: 'phone1',
+    slot: "phone",
+    headerSlot: "phone1",
+  },
+  {
+    type: "select",
+    prop: "select",
+    label: "选择框",
+    options: [
+      {
+        label: "选择1",
+        value: "1",
+      },
+      {
+        label: "选择2",
+        value: "2",
+      },
+      {
+        label: "选择3",
+        value: "3",
+      },
+      {
+        label: "选择4",
+        value: "4",
+      },
+    ],
+    attrs: {
+      clearable: true,
+      placeholder: "请选择",
+    },
+    on: {
+      change: () => console.log("select change"),
+    },
   },
   {
     type: "input",
@@ -112,7 +156,7 @@ const tableCols = ref([
         label: "按钮3",
         type: "primary",
         size: "mini",
-        click: () => console.log('asfasfsadfasdf')
+        click: () => console.log("asfasfsadfasdf"),
       },
       {
         whenShowCb: () => true,
@@ -123,10 +167,14 @@ const tableCols = ref([
     ],
   },
 ])
+
 const handleSelectionChange = (data: any) => {
   console.log(
     data,
     "handleSelectionChangehandleSelectionChangehandleSelectionChange"
   )
+}
+const handleClear = () => {
+  ;(unref(testTable) as typeof ElTable).clearSelection()
 }
 </script>

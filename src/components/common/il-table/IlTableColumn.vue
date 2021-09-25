@@ -3,11 +3,10 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:22:50
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-25 22:54:43
+ * @LastEditTime: 2021-09-25 23:11:04
 -->
 <template>
   <el-table-column
-    :key="props.tableCol.prop"
     v-bind="props.tableCol"
     v-if="
       !['index', 'expand', 'selection', undefined].includes(
@@ -55,7 +54,7 @@
       />
     </template>
   </el-table-column>
-  <el-table-column v-else :key="props.tableCol.prop" v-bind="props.tableCol">
+  <el-table-column v-else v-bind="props.tableCol">
     <!-- header slot -->
     <template v-if="tableCol.headerSlot" #header="scope">
       <slot :name="tableCol.headerSlot" :column="scope.column" />
