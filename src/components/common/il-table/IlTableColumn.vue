@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:22:50
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-22 01:29:43
+ * @LastEditTime: 2021-09-25 22:54:43
 -->
 <template>
   <el-table-column
@@ -15,6 +15,10 @@
       ) || props.tableCol.slot
     "
   >
+    <!-- header slot -->
+    <template v-if="tableCol.headerSlot" #header="scope">
+      <slot :name="tableCol.headerSlot" :column="scope.column" />
+    </template>
     <template #default="scope">
       <!-- 支持自定义 -->
       <slot
@@ -29,6 +33,7 @@
             v-if="!!btn.whenShowCb ? btn.whenShowCb(scope.row) : true"
             :key="index"
             :disabled="btn.isDisabled && btn.isDisabled(scope.row)"
+            :size="props.size"
             v-bind="btn"
             @click="btn.click(scope.row)"
           >
@@ -43,13 +48,22 @@
         :is="getComponentName(props.tableCol.type)"
         v-model="scope.row[props.tableCol.prop]"
         :on="props.tableCol.on"
+        :size="size"
+        :disabled="tableCol.isDisabled && tableCol.isDisabled(scope.row)"
+        :row-data="scope.row"
+        :options="tableCol.options"
       />
     </template>
   </el-table-column>
-  <el-table-column v-else :key="props.tableCol.prop" v-bind="props.tableCol" />
+  <el-table-column v-else :key="props.tableCol.prop" v-bind="props.tableCol">
+    <!-- header slot -->
+    <template v-if="tableCol.headerSlot" #header="scope">
+      <slot :name="tableCol.headerSlot" :column="scope.column" />
+    </template>
+  </el-table-column>
 </template>
 <script lang="ts" setup>
-import { ref, unref } from "vue"
+import { ref, unref, computed } from "vue"
 export interface ListItem {
   label: string
   value: string | number
@@ -58,11 +72,12 @@ export interface ListItem {
 export interface Props {
   tableCol: any
   options?: ListItem[]
+  size?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   tableCol: () => {},
 })
-
+// const attrsAll = computed(() => ({...props.tableCol, }))
 const builtInNames = ref<string[]>(["input", "select", "radio"])
 
 const getComponentName = (type: string | Function) => {

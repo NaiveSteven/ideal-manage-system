@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:58:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-22 01:09:16
+ * @LastEditTime: 2021-09-25 22:51:22
 -->
 <template>
   <el-card>
@@ -11,7 +11,14 @@
       :data="tableData"
       :tableCols="tableCols"
       @selection-change="handleSelectionChange"
-    />
+    >
+      <template #phone="{row, index}">
+        <span>phone:{{row.phone + index}}</span>
+      </template>
+      <template #phone1="{column, index}">
+        <span>自定义标题:{{index}}</span>
+      </template>
+    </il-table>
   </el-card>
 </template>
 
@@ -23,25 +30,29 @@ const tableData = ref([
     name: "nihao1",
     address: "address1",
     username: "username1",
+    phone: 'phone1'
   },
   {
     id: 2,
     name: "nihao2",
     address: "address2",
     username: "username2",
+    phone: 'phone2'
   },
   {
     id: 3,
     name: "nihao3",
     address: "address3",
     username: "username3",
+    phone: 'phone3'
   },
   {
     id: 4,
     name: "nihao4",
     address: "address4",
     username: "username4",
-  },
+    phone: 'phone4'
+  }
 ])
 
 const tableCols = ref([
@@ -59,6 +70,10 @@ const tableCols = ref([
   {
     prop: "address",
     label: "地址",
+  },
+  {
+    slot: 'phone',
+    headerSlot: 'phone1',
   },
   {
     type: "input",
