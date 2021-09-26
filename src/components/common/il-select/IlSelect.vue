@@ -2,11 +2,11 @@
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-15 14:47:36
- * @LastEditTime: 2021-09-17 14:45:50
+ * @LastEditTime: 2021-09-26 19:28:19
  * @LastEditors: mjqin
 -->
 <template>
-  <el-select v-model="bindVal" v-bind="attrsAll" v-on="on">
+  <el-select v-model="bindVal" v-bind="attrsAll" v-on="onAll">
     <el-option
       v-for="(option, idx) in props.options"
       :key="`${option.value}_${idx}`"
@@ -37,5 +37,5 @@ const props = withDefaults(defineProps<Props>(), {
   modelValue: () => ({} as any),
 });
 const emit = defineEmits(["update:modelValue", "input"]);
-const { bindVal, attrsAll } = useAttrs(props, emit);
+const { bindVal, attrsAll, onAll } = useAttrs(props, emit);
 </script>

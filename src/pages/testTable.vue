@@ -3,15 +3,11 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:58:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-25 23:09:51
+ * @LastEditTime: 2021-09-26 19:24:58
 -->
 <template>
   <el-card>
-    <il-table
-      :data="tableData"
-      :tableCols="tableCols"
-      @selection-change="handleSelectionChange"
-    >
+    <il-table :data="tableData" :tableCols="tableCols" @selection-change="handleSelectionChange">
       <template #phone="{ row, index }">
         <span>phone:{{ row.phone + index }}</span>
       </template>
@@ -19,21 +15,23 @@
         <span>自定义标题:{{ index }}</span>
       </template>
     </il-table>
-    <il-table
-      ref="testTable"
-      :data="tableData"
-      :tableCols="tableCols"
-      @selection-change="handleSelectionChange"
-    />
+    <il-table ref="testTable" :data="tableData" :tableCols="tableCols" @selection-change="handleSelectionChange">
+      <template #phone="{ row, index }">
+        <span>phone:{{ row.phone + index }}</span>
+      </template>
+      <template #phone1="{ index }">
+        <span>自定义标题:{{ index }}</span>
+      </template>
+    </il-table>
     <el-button type="primary" @click="handleClear">清除选择</el-button>
   </el-card>
 </template>
 
 <script lang="ts" setup>
-import { ref, unref } from "vue"
-import { ElTable } from "element-plus"
+import { ref, unref } from "vue";
+import { ElTable } from "element-plus";
 
-const testTable = ref(null)
+const testTable = ref(null);
 const tableData = ref([
   {
     id: 1,
@@ -67,7 +65,7 @@ const tableData = ref([
     phone: "phone4",
     select: "4",
   },
-])
+]);
 
 const tableCols = ref([
   {
@@ -128,7 +126,7 @@ const tableCols = ref([
       placeholder: "nihaoa",
     },
     on: {
-      input: () => console.log("22222"),
+      input: (row) => console.log(row,'111111111'),
     },
   },
   {
@@ -166,15 +164,12 @@ const tableCols = ref([
       },
     ],
   },
-])
+]);
 
 const handleSelectionChange = (data: any) => {
-  console.log(
-    data,
-    "handleSelectionChangehandleSelectionChangehandleSelectionChange"
-  )
-}
+  console.log(data, "handleSelectionChangehandleSelectionChangehandleSelectionChange");
+};
 const handleClear = () => {
-  ;(unref(testTable) as typeof ElTable).clearSelection()
-}
+  (unref(testTable) as typeof ElTable).clearSelection();
+};
 </script>

@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-08 21:30:59
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-22 10:15:19
+ * @LastEditTime: 2021-09-26 19:51:43
  */
 export interface PageInfo {
   page: number;
@@ -30,7 +30,8 @@ export interface Props {
   attrs?: Object;
   dynamicAttrs?: Object;
   options?: Array<ListItem>;
-  on?: Object;
+  on?: On;
+  rowData?: Array<any>;
 }
 
 export interface IndexInterface {
@@ -38,5 +39,5 @@ export interface IndexInterface {
 }
 
 export interface On {
-  [index: string]: () => void
+  [index: string]: (...args: any) => void
 }
