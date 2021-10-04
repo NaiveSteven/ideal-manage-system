@@ -3,9 +3,8 @@
  * @Author: mjqin
  * @Date: 2021-09-12 22:03:38
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-17 14:36:25
+ * @LastEditTime: 2021-10-04 17:53:40
  */
-import type { ComponentPublicInstance } from 'vue'
 import { ref, watch } from 'vue';
 
 interface CommonDialogProps {
@@ -15,7 +14,6 @@ interface CommonDialogProps {
 }
 
 export function useShowDialog(
-    ctx: ComponentPublicInstance,
     props: CommonDialogProps,
     emit: EmitType,
     showDialogCallback: Function,

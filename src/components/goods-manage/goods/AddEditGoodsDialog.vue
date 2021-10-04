@@ -91,12 +91,12 @@ import type { ComponentInternalInstance } from 'vue'
 import { getCurrentInstance, reactive, ref, inject } from "vue"
 import { GOOD_STATE, DIALOG_MODE_EDIT } from "@/const"
 import { ElForm } from "element-plus"
-import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
-import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
+import { useShowDialog } from "@/hooks/components/useShowDialog"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
 
 const props = defineProps<{
   modelValue: boolean
-  mode: string
+  mode: 'add' | 'edit'
   curItem: object
   brandList: array
   goodsTypeList: array
@@ -189,14 +189,13 @@ const dialogFormRules = reactive({
 })
 
 const { visible } = useShowDialog(
-  ctx,
   props,
   emit,
   showDialogCallback,
   notShowDialogCallback
 )
 
-const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+const { isConfirmBtnLoading, handleSubmit } =
   useDialogAddEdit(
     ctx,
     props,

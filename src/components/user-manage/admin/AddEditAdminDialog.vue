@@ -64,7 +64,7 @@ import { useShowDialog } from "@/hooks/components/useShowDialog"
 import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
 const props = defineProps<{
   modelValue: boolean
-  mode: string
+  mode: 'add' | 'edit'
   curItem: object
   roleList: array
 }>()
@@ -120,14 +120,13 @@ const dialogFormRules = reactive({
 })
 
 const { visible } = useShowDialog(
-  ctx,
   props,
   emit,
   showDialogCallback,
   notShowDialogCallback
 )
 
-const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+const { isConfirmBtnLoading, handleSubmit } =
   useDialogAddEdit(
     ctx,
     props,

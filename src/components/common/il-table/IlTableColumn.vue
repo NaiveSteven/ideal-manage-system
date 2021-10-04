@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:22:50
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-26 18:44:00
+ * @LastEditTime: 2021-10-04 17:50:37
 -->
 <template>
   <el-table-column
@@ -26,7 +26,7 @@
             :disabled="btn.isDisabled && btn.isDisabled(scope.row)"
             :size="props.size"
             v-bind="btn"
-            @click="btn.click(scope.row)"
+            @click="btn.click && btn.click(scope.row)"
           >
             {{ btn.label }}
           </el-button>

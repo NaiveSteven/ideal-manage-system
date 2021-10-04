@@ -66,17 +66,17 @@
 import type { ComponentInternalInstance } from 'vue'
 import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
 import { DIALOG_MODE_EDIT } from "@/const"
-import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
-import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit.ts"
+import { useShowDialog } from "@/hooks/components/useShowDialog"
+import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
 import { ElForm } from "element-plus"
 import utils from "@/utils/utils"
 
 const props = defineProps<{
   modelValue: boolean
-  mode: string
+  mode: 'add' | 'edit'
   curItem: object
-  permissionList: array
-  moduleList: array
+  permissionList: any
+  moduleList: any
 }>()
 const emit = defineEmits(["update:modelValue", "updateList"])
 const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
@@ -144,14 +144,13 @@ watch(
 )
 
 const { visible } = useShowDialog(
-  ctx,
   props,
   emit,
   showDialogCallback,
   notShowDialogCallback
 )
 
-const { isConfirmBtnLoading, handleSubmit, handleAdd, handleUpdate } =
+const { isConfirmBtnLoading, handleSubmit } =
   useDialogAddEdit(
     ctx,
     props,
