@@ -12,47 +12,6 @@
       :options="optionsConfig"
       :form-item-config="formItemConfig"
     />
-    <!-- <el-form
-      ref="form"
-      :model="dialogForm"
-      label-width="100px"
-      :rules="dialogFormRules"
-    >
-      <el-form-item label="手机号" prop="phone" label-width="100px">
-        <el-input v-model="dialogForm.phone" placeholder="请输入商品名称" />
-      </el-form-item>
-      <el-form-item label="地址" prop="address" label-width="100px">
-        <el-input v-model="dialogForm.address" placeholder="请输入商品名称" />
-      </el-form-item>
-      <el-form-item label="姓名" prop="name" label-width="100px">
-        <el-input v-model="dialogForm.name" placeholder="请输入商品名称" />
-      </el-form-item>
-      <el-form-item label="商品名" prop="goodsId" label-width="100px">
-        <el-select v-model="dialogForm.goodsId" placeholder="请选择商品名">
-          <template v-for="item in goodsList" :key="item.value">
-            <el-option :value="item.id" :label="item.name"></el-option>
-          </template>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="订单状态" prop="state" label-width="100px">
-        <el-radio-group v-model="dialogForm.state">
-          <el-radio :label="1">未付款</el-radio>
-          <el-radio :label="2">已付款未发货</el-radio>
-          <el-radio :label="3">已发货未确认收到</el-radio>
-          <el-radio :label="4">确认到货订单完成</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="处理状态" prop="deal_state" label-width="100px">
-        <el-radio-group v-model="dialogForm.deal_state">
-          <el-radio :label="1">未处理</el-radio>
-          <el-radio :label="2">正在处理</el-radio>
-          <el-radio :label="3">处理完成</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="数量" prop="count" label-width="100px">
-        <el-input-number size="mini" v-model="dialogForm.count" />
-      </el-form-item>
-    </el-form> -->
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="visible = false">取 消</el-button>
