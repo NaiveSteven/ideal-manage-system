@@ -1,79 +1,58 @@
+<!--
+ * @Description: Description
+ * @Author: mjqin
+ * @Date: 2021-07-07 19:11:12
+ * @LastEditors: mjqin
+ * @LastEditTime: 2021-10-06 05:17:27
+-->
 <template>
-  <div>
-    <el-dialog
-      :title="mode === 'add' ? '新增模块' : '编辑模块'"
-      v-model="visible"
-    >
-      <el-form
-        ref="form"
-        :model="dialogForm"
-        label-width="100px"
-        :rules="dialogFormRules"
-      >
-        <el-form-item label="模块名" prop="moduleName" label-width="100px">
-          <el-input
-            v-model="dialogForm.moduleName"
-            placeholder="请输入模块名"
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark" label-width="100px">
-          <el-input
-            v-model="dialogForm.remark"
-            type="textarea"
-            placeholder="请输入备注"
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="visible = false">取 消</el-button>
-          <el-button
-            type="primary"
-            :loading="isConfirmBtnLoading"
-            @click="handleSubmit"
-            >确 定</el-button
-          >
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+  <el-dialog
+    :title="mode === 'add' ? '新增模块' : '编辑模块'"
+    v-model="visible"
+    width="580px"
+  >
+    <il-form
+      ref="form"
+      :layout="layout"
+      :form-model="formModel"
+      :form-config="formConfig"
+      :options="optionsConfig"
+      :form-item-config="formItemConfig"
+    />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="visible = false">取 消</el-button>
+        <el-button
+          type="primary"
+          :loading="isConfirmBtnLoading"
+          @click="handleSubmit"
+          >确 定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
-import type { ComponentInternalInstance } from 'vue'
-import { getCurrentInstance, reactive, inject } from "vue"
+import { inject, nextTick, ref, unref } from "vue"
 import { DIALOG_MODE_EDIT } from "@/const"
 import { ElForm } from "element-plus"
 import { useShowDialog } from "@/hooks/components/useShowDialog"
 import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
+import { FORM_MODEL, LAYOUT, FORM_CONFIG, FORM_ITEM_CONFIG } from "./const"
+import { useFormData } from "@/hooks/components/useFormData"
 
 const props = defineProps<{
   modelValue: boolean
-  mode: 'add' | 'edit'
+  mode: "add" | "edit"
   curItem: object
 }>()
-const emit = defineEmits(['update:modelValue', 'updateList'])
-const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
-const $api = inject("$api")
-const dialogForm = reactive({
-  id: "",
-  moduleName: "",
-  remark: "",
-})
-const dialogFormRules = reactive({
-  moduleName: [
-    {
-      required: true,
-      trigger: "change",
-    },
-  ],
-  remark: [
-    {
-      required: true,
-      trigger: "change",
-    },
-  ],
-})
+const emit = defineEmits(["update:modelValue", "updateList"])
 
+const form = ref(null)
+const $api = inject("$api") as { [index: string]: Function }
+
+const { formModel, formConfig, formItemConfig, layout, optionsConfig } =
+  useFormData(FORM_MODEL, FORM_CONFIG, FORM_ITEM_CONFIG, LAYOUT)
 
 const { visible } = useShowDialog(
   props,
@@ -82,56 +61,30 @@ const { visible } = useShowDialog(
   notShowDialogCallback
 )
 
-const { isConfirmBtnLoading, handleSubmit } =
-  useDialogAddEdit(
-    ctx,
-    props,
-    emit,
-    ($api as { [index: string]: Function }).addModule,
-    ($api as { [index: string]: Function }).updateModule,
-    visible,
-    () => { return {...dialogForm} },
-    () => { return {...dialogForm, id: props.curItem.id} }
-  )
+const { isConfirmBtnLoading, handleSubmit } = useDialogAddEdit(
+  props,
+  emit,
+  $api.addModule,
+  $api.updateModule,
+  visible,
+  () => {
+    return { ...formModel }
+  },
+  () => {
+    return { ...formModel, id: props.curItem.id }
+  }
+)
 
-function showDialogCallback() {
+async function showDialogCallback() {
   if (props.mode === DIALOG_MODE_EDIT) {
-    ctx?.$nextTick(() => {
-      Object.assign(dialogForm, props.curItem)
-    })
+    await nextTick()
+    Object.assign(formModel, props.curItem)
   }
 }
 
 function notShowDialogCallback() {
-  ;(ctx?.$refs.form as typeof ElForm).resetFields()
+  ;(unref(form as unknown) as typeof ElForm).resetFields()
 }
-
-// const handleAdd = async () => {
-//   isBtnLoading.value = true
-//   try {
-//     await $api.addModule({ ...dialogForm })
-//     visible.value = false
-//     $message.success("创建成功")
-//     emit("updateList")
-//   } catch (error) {
-//     $message(error.msg || error)
-//   }
-//   isBtnLoading.value = false
-// }
-
-// const handleUpdate = async () => {
-//   isBtnLoading.value = true
-//   try {
-//     const params = { ...dialogForm, id: props.curItem.id }
-//     await $api.updateModule(params)
-//     visible.value = false
-//     $message.success("编辑成功")
-//     emit("updateList")
-//   } catch (error) {
-//     $message(error.msg || error)
-//   }
-//   isBtnLoading.value = false
-// }
 </script>
 
 <style lang="scss"></style>

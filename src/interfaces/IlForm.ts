@@ -1,23 +1,26 @@
+import { ListItem } from "./Common"
+
 /*
  * @Description: description
  * @Author: mjqin
  * @Date: 2021-09-17 15:36:53
- * @LastEditTime: 2021-09-17 16:53:15
+ * @LastEditTime: 2021-10-06 05:09:35
  * @LastEditors: mjqin
  */
 export interface FormItemConfigItem {
-  type: string;
-  prop: string;
+  type?: string;
+  prop?: string;
   formItem?: {
-    [index: string]: string;
+    [index: string]: any;
   };
   attrs?: {
-    [index: string]: string;
+    [index: string]: any;
   };
   hide?: Function;
   on?: Function;
   dynamicAttrs?: string;
   modifier?: string;
+  slot?: string;
 }
 
 export type validateCallback = (isSuccess: boolean, field: object) => void

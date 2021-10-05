@@ -3,9 +3,10 @@
  * @Author: mjqin
  * @Date: 2021-09-12 17:01:37
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-17 14:35:01
+ * @LastEditTime: 2021-10-06 04:28:54
  */
-import type { ComponentPublicInstance, Ref } from 'vue'
+import type { Ref, ComponentInternalInstance } from 'vue'
+import {getCurrentInstance} from 'vue'
 import { ElMessage, ElForm } from 'element-plus'
 import { ref } from 'vue';
 import { DIALOG_MODE_ADD } from "@/const"
@@ -17,7 +18,6 @@ interface CommonDialogProps {
 }
 
 export function useDialogAddEdit(
-    ctx: ComponentPublicInstance,
     props: CommonDialogProps,
     emit: EmitType,
     asyncAddFunc: Function,
@@ -26,11 +26,11 @@ export function useDialogAddEdit(
     getAddParams: Function,
     getUpdateParams: Function,
 ) {
+    const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
     const isConfirmBtnLoading = ref<Boolean>(false)
-    // const emits = defineEmits(["updateList"])
 
     const handleSubmit = () => {
-        (ctx.$refs.form as typeof ElForm).validate((valid: Boolean) => {
+        (ctx?.$refs.form as typeof ElForm).validate((valid: Boolean) => {
             if (valid) {
                 if (props.mode === DIALOG_MODE_ADD) {
                     handleAdd()

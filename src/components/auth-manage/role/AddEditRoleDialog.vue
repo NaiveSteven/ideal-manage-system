@@ -2,37 +2,25 @@
   <div>
     <el-dialog
       v-model="visible"
-      width="560px"
+      width="580px"
       :title="mode === 'add' ? '新增角色' : '编辑角色'"
     >
-      <el-form
+      <il-form
         ref="form"
-        :model="dialogForm"
-        label-width="100px"
-        :rules="dialogFormRules"
+        :layout="layout"
+        :form-model="formModel"
+        :form-config="formConfig"
+        :options="optionsConfig"
+        :form-item-config="formItemConfig"
       >
-        <el-form-item label="角色名" prop="name" label-width="100px">
-          <el-input v-model="dialogForm.name" placeholder="请输入角色名" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark" label-width="100px">
-          <el-input
-            type="textarea"
-            v-model="dialogForm.remark"
-            :autosize="{ minRows: 2, maxRows: 6 }"
-            placeholder="请输入备注"
-          />
-        </el-form-item>
-        <div>
+        <template #checkbox>
           <el-checkbox
             :indeterminate="isIndeterminate"
             v-model="isCheckAll"
             @change="handleCheckAllChange"
             >全选</el-checkbox
           >
-          <template
-            v-for="(permission, index) in newPermissionList"
-            :key="index"
-          >
+          <template v-for="permission in newPermissionList">
             <div class="my-2 text-xl">{{ permission.module_name }}</div>
             <el-checkbox-group
               v-model="checkedPermissionList"
@@ -46,8 +34,8 @@
               >
             </el-checkbox-group>
           </template>
-        </div>
-      </el-form>
+        </template>
+      </il-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="visible = false">取 消</el-button>
@@ -63,48 +51,32 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { ComponentInternalInstance } from 'vue'
-import { getCurrentInstance, reactive, ref, watch, inject } from "vue"
+import { ref, watch, inject, unref, nextTick } from "vue"
 import { DIALOG_MODE_EDIT } from "@/const"
 import { useShowDialog } from "@/hooks/components/useShowDialog"
 import { useDialogAddEdit } from "@/hooks/components/useDialogAddEdit"
 import { ElForm } from "element-plus"
+import { FORM_MODEL, LAYOUT, FORM_CONFIG, FORM_ITEM_CONFIG } from "./const"
+import { useFormData } from "@/hooks/components/useFormData"
 import utils from "@/utils/utils"
 
 const props = defineProps<{
   modelValue: boolean
-  mode: 'add' | 'edit'
+  mode: "add" | "edit"
   curItem: object
   permissionList: any
   moduleList: any
 }>()
 const emit = defineEmits(["update:modelValue", "updateList"])
-const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
 const $api = inject("$api") as { [index: string]: Function }
+const { formModel, formConfig, formItemConfig, layout, optionsConfig } =
+  useFormData(FORM_MODEL, FORM_CONFIG, FORM_ITEM_CONFIG, LAYOUT)
+const form = ref(null)
 const newPermissionList = ref([])
 const checkedPermissionList = ref([])
 const permissionIdList = ref([])
 const isIndeterminate = ref(false)
 const isCheckAll = ref(false)
-const dialogForm = reactive({
-  permissionsID: "",
-  name: "",
-  remark: "",
-})
-const dialogFormRules = reactive({
-  name: [
-    {
-      required: true,
-      trigger: "change",
-    },
-  ],
-  remark: [
-    {
-      required: true,
-      trigger: "change",
-    },
-  ],
-})
 
 watch(
   () => props.permissionList,
@@ -150,33 +122,30 @@ const { visible } = useShowDialog(
   notShowDialogCallback
 )
 
-const { isConfirmBtnLoading, handleSubmit } =
-  useDialogAddEdit(
-    ctx,
-    props,
-    emit,
-    ($api as { [index: string]: Function }).addRole,
-    ($api as { [index: string]: Function }).updateRole,
-    visible,
-    getAddParams,
-    getUpdateParams
-  )
+const { isConfirmBtnLoading, handleSubmit } = useDialogAddEdit(
+  props,
+  emit,
+  ($api as { [index: string]: Function }).addRole,
+  ($api as { [index: string]: Function }).updateRole,
+  visible,
+  getAddParams,
+  getUpdateParams
+)
 
-function showDialogCallback() {
+async function showDialogCallback() {
   if (props.mode === DIALOG_MODE_EDIT) {
-    ctx.$nextTick(() => {
-      Object.assign(dialogForm, props.curItem)
-      const arr: any = []
-      props.curItem.permissionsID.forEach((item) => {
-        arr.push(Number(item))
-      })
-      checkedPermissionList.value = arr
+    await nextTick()
+    Object.assign(formModel, props.curItem)
+    const arr: any = []
+    props.curItem.permissionsID.forEach((item) => {
+      arr.push(Number(item))
     })
+    checkedPermissionList.value = arr
   }
 }
 
 function notShowDialogCallback() {
-  ;(ctx?.$refs.form as typeof ElForm).resetFields()
+  ;(unref(form as unknown) as typeof ElForm).resetFields()
   isCheckAll.value = false
   checkedPermissionList.value = []
 }
@@ -184,8 +153,8 @@ function notShowDialogCallback() {
 function getAddParams() {
   const ids = checkedPermissionList.value.join()
   const params = {
-    name: dialogForm.name,
-    remark: dialogForm.remark,
+    name: formModel.name,
+    remark: formModel.remark,
     permissionsID: ids,
   }
   return params
@@ -195,8 +164,8 @@ function getUpdateParams() {
   const ids = checkedPermissionList.value.join()
   const params = {
     id: props.curItem.id,
-    name: dialogForm.name,
-    remark: dialogForm.remark,
+    name: formModel.name,
+    remark: formModel.remark,
     permissionsID: ids,
   }
   return params
@@ -214,45 +183,6 @@ const handleCheckedPermissionChange = (value) => {
   isIndeterminate.value =
     checkedCount > 0 && checkedCount < permissionIdList.value.length
 }
-
-// const handleAdd = async () => {
-//   isBtnLoading.value = true
-//   try {
-//     const ids = checkedPermissionList.value.join()
-//     const params = {
-//       name: dialogForm.name,
-//       remark: dialogForm.remark,
-//       permissionsID: ids,
-//     }
-//     await $api.addRole(params)
-//     visible.value = false
-//     $message.success("创建成功")
-//     emit("updateList")
-//   } catch (error) {
-//     $message(error.msg || error)
-//   }
-//   isBtnLoading.value = false
-// }
-
-// const handleUpdate = async () => {
-//   isBtnLoading.value = true
-//   try {
-//     const ids = checkedPermissionList.value.join()
-//     const params = {
-//       id: props.curItem.id,
-//       name: dialogForm.name,
-//       remark: dialogForm.remark,
-//       permissionsID: ids,
-//     }
-//     await $api.updateRole(params)
-//     visible.value = false
-//     $message.success("编辑成功")
-//     emit("updateList")
-//   } catch (error) {
-//     $message(error.msg || error)
-//   }
-//   isBtnLoading.value = false
-// }
 </script>
 
 <style lang="scss"></style>

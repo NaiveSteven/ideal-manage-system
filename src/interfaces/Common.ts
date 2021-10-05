@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-08 21:30:59
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-26 19:51:43
+ * @LastEditTime: 2021-10-06 04:48:46
  */
 export interface PageInfo {
   page: number;
@@ -35,9 +35,29 @@ export interface Props {
 }
 
 export interface IndexInterface {
-  [index: string]: string;
+  [index: string]: any;
 }
 
 export interface On {
   [index: string]: (...args: any) => void
+}
+
+export interface RowLayout {
+  type?: string;
+  justify?: string;
+  items?: string;
+  content?: string;
+  direction?: string;
+  wrap?: string;
+}
+export interface ColLayout {
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+}
+export interface Layout {
+  rowLayout?: RowLayout;
+  colLayout?: ColLayout;
 }
