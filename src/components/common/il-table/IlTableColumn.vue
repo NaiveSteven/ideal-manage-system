@@ -3,11 +3,11 @@
  * @Author: mjqin
  * @Date: 2021-09-21 02:22:50
  * @LastEditors: mjqin
- * @LastEditTime: 2021-10-04 17:50:37
+ * @LastEditTime: 2021-10-07 04:12:19
 -->
 <template>
   <el-table-column
-    v-bind="props.tableCol"
+    v-bind="attrsAll"
     v-if="!['index', 'expand', 'selection', undefined].includes(props.tableCol.type) || props.tableCol.slot"
   >
     <!-- header slot -->
@@ -46,7 +46,7 @@
       />
     </template>
   </el-table-column>
-  <el-table-column v-else v-bind="props.tableCol">
+  <el-table-column v-else v-bind="attrsAll">
     <!-- header slot -->
     <template v-if="tableCol.headerSlot" #header="scope">
       <slot :name="tableCol.headerSlot" :column="scope.column" />

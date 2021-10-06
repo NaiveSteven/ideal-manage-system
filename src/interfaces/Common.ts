@@ -3,11 +3,12 @@
  * @Author: mjqin
  * @Date: 2021-08-08 21:30:59
  * @LastEditors: mjqin
- * @LastEditTime: 2021-10-06 04:48:46
+ * @LastEditTime: 2021-10-06 17:53:05
  */
 export interface PageInfo {
   page: number;
   limit: number;
+  total: number;
 }
 
 export interface GetListReq extends PageInfo {

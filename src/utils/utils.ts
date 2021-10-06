@@ -9,7 +9,7 @@ interface TreeListItem {
  * 工具函数封装
  */
 export default {
-    formateDate(date: Date, rule: string) {
+    formateDate(date: Date, rule?: string) {
         let fmt = rule || 'yyyy-MM-dd hh:mm:ss'
         if (/(y+)/.test(fmt)) {
             fmt = fmt.replace(RegExp.$1, date.getFullYear().toString())
@@ -30,7 +30,7 @@ export default {
         }
         return fmt;
     },
-    getListName(id: number, list: Ref | Array<{ [index: string]: number }>, name = 'name') {
+    getListName(id: number, list: Ref | any, name = 'name') {
         let obj = {} as any;
         if ((list as Ref).value) {
             obj = (list as Ref).value.find((item: any) => {
@@ -46,7 +46,7 @@ export default {
         }
         return obj[name];
     },
-    getListLabel(value: number, list: Array<{ [index: string]: number }>) {
+    getListLabel(value: number, list: any) {
         let obj = {} as any;
         obj = list.find((item: any) => {
             return item.value === value;

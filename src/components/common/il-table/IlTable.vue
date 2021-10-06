@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-09-19 01:37:33
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-25 23:05:25
+ * @LastEditTime: 2021-10-07 04:05:43
 -->
 <template>
   <el-table ref="ilTable" v-bind="attrsAll" v-loading="loading">
@@ -26,7 +26,7 @@
     :page-sizes="paginationSizes"
     background
     :small="true"
-    :page-size="props.pagination.page_size"
+    :page-size="props.pagination.limit"
     :current-page="props.pagination.page"
     :total="props.pagination.total"
     @current-change="handleCurrentChange"
@@ -50,7 +50,7 @@ export interface ListItem {
 }
 export interface Pagination {
   page: number;
-  page_size: number;
+  limit: number;
   total: number;
 }
 export interface TableCols extends TableColumn<any> {
@@ -82,7 +82,7 @@ const {
 } = useTableMethods<any>();
 const props = withDefaults(defineProps<Props>(), {
   isPagination: true,
-  pagination: () => ({ page: 1, page_size: 10, total: 0 }),
+  pagination: () => ({ page: 1, limit: 10, total: 0 }),
   paginationSizes: () => [10, 20, 40, 50, 100],
   size: 'mini',
   border: true
@@ -97,7 +97,7 @@ const handleCurrentChange = (val: number) => {
 };
 const handleSizeChange = (val: number) => {
   props.pagination.page = 1;
-  props.pagination.page_size = val;
+  props.pagination.limit = val;
   emit("refresh");
 };
 

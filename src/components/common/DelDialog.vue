@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-05-29 18:15:29
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-12 23:54:38
+ * @LastEditTime: 2021-10-07 04:19:29
 -->
 <template>
   <div>
@@ -39,7 +39,6 @@ const content = computed(() => {
 })
 
 const { visible } = useShowDialog(
-  ctx,
   props,
   emit,
   () => {},

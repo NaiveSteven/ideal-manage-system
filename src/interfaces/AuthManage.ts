@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-08 21:39:10
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-08 21:44:50
+ * @LastEditTime: 2021-10-07 04:54:06
  */
 export interface AddModuleReq {
     moduleName: string;
@@ -33,4 +33,16 @@ export interface AddPermissionReq {
 
 export interface UpdatePermissionReq extends AddPermissionReq {
     id: number;
+}
+
+export interface ModuleItem extends UpdatePermissionReq {
+    adminUserId: number;
+}
+
+export interface PermissionItem extends UpdatePermissionReq {
+    adminUserId: number;
+}
+
+export interface RoleItem extends UpdateRoleReq {
+    adminUserId: number;
 }
