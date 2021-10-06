@@ -3,40 +3,37 @@
     <el-card>
       <div class="mb-6">
         <el-button type="primary" @click="handleCreate">新增</el-button>
-        <el-button type="danger" :disabled="checkedBrandIds.length === 0" @click="handleDel()">批量删除</el-button>
-      </div>
-      <el-table :data="brandList" @selection-change="handleSelectionChange" v-loading="isTableLoading">
-        <el-table-column type="selection" width="55" />
-        <el-table-column
-          v-for="item in columns"
-          :key="item.prop"
-          :prop="item.prop"
-          :label="item.label"
-          :width="item.width"
-          :min-width="item.minWidth"
-          :formatter="item.formatter"
-          :show-overflow-tooltip="item.showOverflowTooltip"
+        <el-button
+          type="danger"
+          :disabled="checkedBrandIds.length === 0"
+          @click="handleDel()"
+          >批量删除</el-button
         >
-        </el-table-column>
-        <el-table-column label="操作" width="150">
-          <template #header>
-            <el-input size="mini" v-model="brandForm.keyword" @change="getBrandList" placeholder="请输入品牌名" />
-          </template>
-          <template #default="scope">
-            <el-button type="text" @click="handleEdit(scope.row)" size="mini">编辑</el-button>
-            <el-button type="text" size="mini" @click="handleDel(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        class="text-right mt-6"
-        background
-        layout="prev, pager, next"
-        :total="pager.total"
-        :page-size="pager.limit"
-        @current-change="handleCurrentChange"
+      </div>
+      <il-table
+        ref="testTable"
+        :data="brandList"
+        :loading="isTableLoading"
+        :tableCols="tableCols"
+        :pagination="pagination"
+        @selection-change="handleSelectionChange"
+        @refresh="getBrandList"
+      >
+        <template #header>
+          <el-input
+            size="mini"
+            v-model="brandForm.keyword"
+            @change="getBrandList"
+            placeholder="请输入品牌名"
+          />
+        </template>
+      </il-table>
+      <AddEditBrandDialog
+        :curItem="curItem"
+        :mode="dialogMode"
+        v-model="isShowAEDialog"
+        @updateList="getBrandList"
       />
-      <AddEditBrandDialog :curItem="curItem" :mode="dialogMode" v-model="isShowAEDialog" @updateList="getBrandList" />
       <DelDialog
         v-model="isShowDelDialog"
         @delConfirm="handleDelConfirm"
@@ -46,135 +43,110 @@
     </el-card>
   </div>
 </template>
-<script setup>
-import { AddEditBrandDialog } from "@/components";
-import { DelDialog } from "@/components";
-import { getCurrentInstance, onMounted, reactive, ref, inject } from "vue";
-import { DIALOG_MODE_ADD, DIALOG_MODE_EDIT, DEL_DIALOG_SINGLE, DEL_DIALOG_MULTIPLE } from "@/const";
-import utils from "@/utils/utils";
+<script lang="ts" setup>
+import { AddEditBrandDialog } from "@/components"
+import { DelDialog } from "@/components"
+import { ElMessage } from "element-plus"
+import { onMounted, reactive, ref, inject } from "vue"
+import {
+  DIALOG_MODE_ADD,
+  DIALOG_MODE_EDIT,
+  DEL_DIALOG_SINGLE,
+  DEL_DIALOG_MULTIPLE,
+} from "@/const"
+import { BrandItem } from "@/interfaces/GoodsManage"
+import { GetListReq } from "@/interfaces/Common"
+import { useTableData } from "@/hooks/components/useTableData"
+import { TABLE_COLS } from "./const/brandConst"
 
-const { ctx } = getCurrentInstance();
-const $api = inject("$api")
-const $message = inject("$message")
-const checkedBrandIds = ref([]);
-const brandList = ref([]);
-const contents = ref([]);
-const isTableLoading = ref(false);
-const isShowAEDialog = ref(false);
-const isDelBtnLoading = ref(false);
-const isShowDelDialog = ref(false);
-const dialogMode = ref(DIALOG_MODE_ADD);
-const delMode = ref(DEL_DIALOG_MULTIPLE);
-const curItem = ref({});
+const $api = inject("$api") as { [index: string]: Function }
+const $message = inject("$message") as typeof ElMessage
+
+const checkedBrandIds = ref<number[]>([])
+const brandList = ref([])
+const contents = ref([])
+const isShowAEDialog = ref(false)
+const isDelBtnLoading = ref(false)
+const isShowDelDialog = ref(false)
+const dialogMode = ref<"add" | "edit">(DIALOG_MODE_ADD)
+const delMode = ref(DEL_DIALOG_MULTIPLE)
+const curItem = ref<BrandItem>({} as BrandItem)
 const brandForm = reactive({
   keyword: "",
-});
-const pager = reactive({
-  page: 1,
-  limit: 10,
-  total: 10,
-});
-const columns = reactive([
-  {
-    label: "品牌名",
-    prop: "name",
-    minWidth: 120,
-  },
-  {
-    label: "创建时间",
-    prop: "createdAt",
-    minWidth: 150,
-    formatter: (row, column, value) => {
-      return utils.formateDate(new Date(value));
-    },
-  },
-]);
+})
+
+const { pagination, tableCols, isTableLoading } = useTableData(
+  TABLE_COLS(handleEdit, handleDel)
+)
 
 onMounted(() => {
-  getBrandList();
-});
+  getBrandList()
+})
 
 const getBrandList = async () => {
-  isTableLoading.value = true;
+  isTableLoading.value = true
   try {
-    const params = { ...pager };
-    Object.keys(brandForm).forEach((item) => {
-      if (brandForm[item]) {
-        params[item] = brandForm[item];
-      }
-    });
-    const { count, rows } = await $api.getBrandList(params);
-    brandList.value = rows;
-    pager.total = count;
+    const params = { ...pagination } as GetListReq
+    if (brandForm.keyword) {
+      params.keyword = brandForm.keyword
+    }
+    const { count, rows } = await $api.getBrandList(params)
+    brandList.value = rows
+    pagination.total = count
   } catch (error) {
-    $message.error(error.msg || error);
+    $message.error(error.msg || error)
   }
-  isTableLoading.value = false;
-};
+  isTableLoading.value = false
+}
 
-const deleteBrand = async (ids) => {
-  isDelBtnLoading.value = true;
+const deleteBrand = async (ids: number[]) => {
+  isDelBtnLoading.value = true
   try {
-    await $api.deleteBrand({ id: ids });
-    $message.success("删除成功");
-    isDelBtnLoading.value = false;
-    isShowDelDialog.value = false;
-    getBrandList();
+    await $api.deleteBrand({ id: ids })
+    $message.success("删除成功")
+    isDelBtnLoading.value = false
+    isShowDelDialog.value = false
+    getBrandList()
   } catch (error) {
-    $message.error(error.msg || error);
+    $message.error(error.msg || error)
   }
-  isDelBtnLoading.value = false;
-};
+  isDelBtnLoading.value = false
+}
 
 const handleDelConfirm = () => {
   if (delMode.value === DEL_DIALOG_SINGLE) {
-    deleteBrand([curItem.value.id]);
+    deleteBrand([curItem.value.id])
   } else {
-    deleteBrand(checkedBrandIds.value);
+    deleteBrand(checkedBrandIds.value)
   }
-};
+}
 
-const handleDel = (row) => {
-  delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE;
-  isShowDelDialog.value = true;
-  if (row) {
-    curItem.value = row;
-  }
-};
-
-const handleSelectionChange = (list) => {
-  const arr = [];
+const handleSelectionChange = (list: BrandItem[]) => {
+  const arr = [] as number[]
   list.map((item) => {
-    arr.push(item.id);
-  });
-  checkedBrandIds.value = arr;
-};
+    arr.push(item.id)
+  })
+  checkedBrandIds.value = arr
+}
 
 const handleCreate = () => {
-  dialogMode.value = DIALOG_MODE_ADD;
-  isShowAEDialog.value = true;
-};
+  dialogMode.value = DIALOG_MODE_ADD
+  isShowAEDialog.value = true
+}
 
-const handleEdit = (row) => {
-  dialogMode.value = DIALOG_MODE_EDIT;
-  curItem.value = row;
-  isShowAEDialog.value = true;
-};
+function handleEdit(row: BrandItem) {
+  dialogMode.value = DIALOG_MODE_EDIT
+  curItem.value = row
+  isShowAEDialog.value = true
+}
 
-const handleQuery = () => {
-  pager.page = 1;
-  getBrandList();
-};
-
-const handleReset = (form) => {
-  ctx.$refs[form].resetFields();
-  getBrandList();
-};
-
-const handleCurrentChange = (current) => {
-  pager.page = current;
-  getBrandList();
-};
+function handleDel(row?: BrandItem) {
+  delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
+  isShowDelDialog.value = true
+  if (row) {
+    curItem.value = row
+  }
+}
 </script>
 
 <style lang="scss"></style>

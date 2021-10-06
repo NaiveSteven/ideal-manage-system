@@ -85,7 +85,7 @@ onMounted(() => {
 const getModuleList = async () => {
   isTableLoading.value = true
   try {
-    let params: GetListReq = { ...pagination }
+    const params: GetListReq = { ...pagination }
     if (moduleForm.keyword) {
       params.keyword = moduleForm.keyword
     }
