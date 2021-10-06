@@ -3,9 +3,13 @@
  * @Author: mjqin
  * @Date: 2021-10-06 06:20:26
  * @LastEditors: mjqin
- * @LastEditTime: 2021-10-06 06:31:49
+ * @LastEditTime: 2021-10-07 06:54:25
  */
 import { FormItemConfigItem } from "@/interfaces/ilForm"
+import utils from "@/utils/utils"
+import { PlaceOrderItem } from "@/interfaces/OrderManage"
+import type { Ref } from 'vue'
+
 export const FORM_MODEL = {
     id: "",
     name: "",
@@ -169,3 +173,87 @@ export const Options = {
         },
     ],
 }
+
+
+
+
+type Operate_func = (row: PlaceOrderItem) => void
+
+export const TABLE_COLS = (handleEdit: Operate_func, handleDel: Operate_func, handleToDetail: Operate_func, userList: Ref, goodsList: Ref) => [
+    {
+        type: 'selection',
+        width: '55'
+    },
+    {
+        label: "用户Id",
+        prop: "userId",
+        width: 100,
+        showOverflowTooltip: true,
+        formatter: ({ }, { }, value: number) => {
+            return utils.getListName(value, userList)
+        },
+    },
+    {
+        label: "商品名",
+        prop: "goodsId",
+        minWidth: 100,
+        showOverflowTooltip: true,
+        formatter: ({ }, { }, value: number) => {
+            return utils.getListName(value, goodsList)
+        },
+    },
+    {
+        label: "地址",
+        prop: "address",
+        width: 100,
+        showOverflowTooltip: true,
+    },
+    {
+        label: "价格",
+        prop: "price",
+        minWidth: 100,
+    },
+    {
+        label: "购买数量",
+        prop: "count",
+        minWidth: 100,
+    },
+    {
+        label: "状态",
+        slot: "state",
+        minWidth: 150,
+    },
+    {
+        label: "创建时间",
+        prop: "createdAt",
+        width: 150,
+        formatter: ({ }, { }, value: string) => {
+            return utils.formateDate(new Date(value))
+        },
+    },
+    {
+        label: '操作',
+        type: 'button',
+        width: 120,
+        btnList: [
+            {
+                label: "编辑",
+                type: "text",
+                size: "mini",
+                click: (row: PlaceOrderItem) => handleEdit(row)
+            },
+            {
+                label: "详情",
+                type: "text",
+                size: "mini",
+                click: (row: PlaceOrderItem) => handleToDetail(row)
+            },
+            {
+                label: "删除",
+                type: "text",
+                size: "mini",
+                click: (row: PlaceOrderItem) => handleDel(row)
+            },
+        ],
+    }
+]

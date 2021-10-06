@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-07-18 17:44:12
  * @LastEditors: mjqin
- * @LastEditTime: 2021-08-08 21:57:10
+ * @LastEditTime: 2021-10-07 06:39:02
  */
 import { GetListReq } from './Common'
 
@@ -26,4 +26,8 @@ export interface AddPlaceOrderReq {
 
 export interface UpdatePlaceOrderReq extends AddPlaceOrderReq {
     id: number;
+}
+
+export interface PlaceOrderItem extends UpdatePlaceOrderReq {
+    adminUserId: string;
 }

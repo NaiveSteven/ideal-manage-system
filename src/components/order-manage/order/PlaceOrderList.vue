@@ -9,59 +9,30 @@
         >批量删除</el-button
       >
     </div>
-    <el-table
+    <il-table
+      ref="testTable"
       :data="placeOrderList"
+      :loading="isTableLoading"
+      :tableCols="tableCols"
+      :pagination="pagination"
       @selection-change="handleSelectionChange"
-      v-loading="isTableLoading"
+      @refresh="getPlaceOrderList"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column
-        v-for="item in columns"
-        :key="item.prop"
-        :prop="item.prop"
-        :label="item.label"
-        :width="item.width"
-        :min-width="item.minWidth"
-        :formatter="item.formatter"
-        :show-overflow-tooltip="item.showOverflowTooltip"
-      >
-        <template v-if="item.prop === 'state'" #default="scope">
-          <el-tag v-if="scope.row.state === 1" type="danger" effect="dark"
-            >未付款</el-tag
-          >
-          <el-tag v-if="scope.row.state === 2" type="warning" effect="dark"
-            >已付款未发货</el-tag
-          >
-          <el-tag v-if="scope.row.state === 3" type="primary" effect="dark"
-            >已发货未确认收到</el-tag
-          >
-          <el-tag v-if="scope.row.state === 4" type="success" effect="dark"
-            >确认到货订单完成</el-tag
-          >
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="120">
-        <template #default="scope">
-          <el-button type="text" @click="handleEdit(scope.row)" size="mini"
-            >编辑</el-button
-          >
-          <el-button type="text" size="mini" @click="handleToDetail(scope.row)"
-            >详情</el-button
-          >
-          <el-button type="text" size="mini" @click="handleDel(scope.row)"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      class="text-right mt-6"
-      background
-      layout="prev, pager, next"
-      :total="pager.total"
-      :page-size="pager.limit"
-      @current-change="handleCurrentChange"
-    />
+      <template #state="scope">
+        <el-tag v-if="scope.row.state === 1" type="danger" effect="dark"
+          >未付款</el-tag
+        >
+        <el-tag v-if="scope.row.state === 2" type="warning" effect="dark"
+          >已付款未发货</el-tag
+        >
+        <el-tag v-if="scope.row.state === 3" type="primary" effect="dark"
+          >已发货未确认收到</el-tag
+        >
+        <el-tag v-if="scope.row.state === 4" type="success" effect="dark"
+          >确认到货订单完成</el-tag
+        >
+      </template>
+    </il-table>
     <AddEditOrderDialog
       :goodsList="goodsList"
       :curItem="curItem"
@@ -69,115 +40,60 @@
       v-model="isShowAEDialog"
       @updateList="getPlaceOrderList"
     />
-    <!-- <DelDialog
-        v-model="isShowDelDialog"
-        @delConfirm="handleDelConfirm"
-        :contents="contents"
-        :isBtnLoading="isDelBtnLoading"
-      /> -->
+    <DelDialog
+      v-model="isShowDelDialog"
+      @delConfirm="handleDelConfirm"
+      :contents="contents"
+      :isBtnLoading="isDelBtnLoading"
+    />
   </div>
 </template>
 <script lang="ts" setup>
 import { AddEditOrderDialog } from "@/components"
-// import DelDialog from "../components/common/DelDialog.vue"
+import { DelDialog } from "@/components"
+import { onMounted, reactive, ref, watch, inject } from "vue"
 import {
-  getCurrentInstance,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-  inject,
-} from "vue"
-import {
-  GOOD_STATE,
   DIALOG_MODE_ADD,
   DIALOG_MODE_EDIT,
   DEL_DIALOG_SINGLE,
   DEL_DIALOG_MULTIPLE,
 } from "@/const"
-import utils from "@/utils/utils"
+import { ElMessage } from "element-plus"
+import { PlaceOrderItem, GetPlaceOrderListReq } from "@/interfaces/OrderManage"
+import { GoodsTypeItem } from "@/interfaces/GoodsManage"
+import { useTableData } from "@/hooks/components/useTableData"
+import { TABLE_COLS } from "./const"
+
 const props = defineProps<{
   deal_state: string
 }>()
 const emit = defineEmits(["toDetail"])
-const { ctx } = getCurrentInstance()
-const $api = inject("$api")
-const $message = inject("$message")
-const goodStateList = ref(GOOD_STATE)
-const checkedGoodsIds = ref([])
+const $api = inject("$api") as { [index: string]: Function }
+const $message = inject("$message") as typeof ElMessage
+
+const checkedGoodsIds = ref<number[]>([])
 const placeOrderList = ref([])
 const goodsTypeList = ref([])
 const brandList = ref([])
 const goodsList = ref([])
 const userList = ref([])
 const contents = ref([])
-const isTableLoading = ref(false)
 const isShowAEDialog = ref(false)
 const isDelBtnLoading = ref(false)
 const isShowDelDialog = ref(false)
-const dialogMode = ref(DIALOG_MODE_ADD)
+const dialogMode = ref<"add" | "edit">(DIALOG_MODE_ADD)
 const delMode = ref(DEL_DIALOG_MULTIPLE)
-const curItem = ref({})
+const curItem = ref<PlaceOrderItem>({} as PlaceOrderItem)
 const placeOrderForm = reactive({
   keyword: "",
   brandId: "",
   goodsTypeId: [],
   state: 0,
 })
-const pager = reactive({
-  page: 1,
-  limit: 10,
-  total: 10,
-})
-const columns = reactive([
-  {
-    label: "用户Id",
-    prop: "userId",
-    width: 100,
-    showOverflowTooltip: true,
-    formatter: (row, column, value) => {
-      return utils.getListName(value, userList)
-    },
-  },
-  {
-    label: "商品名",
-    prop: "goodsId",
-    minWidth: 100,
-    showOverflowTooltip: true,
-    formatter: (row, column, value) => {
-      return utils.getListName(value, goodsList)
-    },
-  },
-  {
-    label: "地址",
-    prop: "address",
-    width: 100,
-    showOverflowTooltip: true,
-  },
-  {
-    label: "价格",
-    prop: "price",
-    minWidth: 100,
-  },
-  {
-    label: "购买数量",
-    prop: "count",
-    minWidth: 100,
-  },
-  {
-    label: "状态",
-    prop: "state",
-    minWidth: 150,
-  },
-  {
-    label: "创建时间",
-    prop: "createdAt",
-    width: 150,
-    formatter: (row, column, value) => {
-      return utils.formateDate(new Date(value))
-    },
-  },
-])
+
+const { pagination, tableCols, isTableLoading } = useTableData(
+  TABLE_COLS(handleEdit, handleDel, handleToDetail, userList, goodsList)
+)
 
 watch(
   () => props.deal_state,
@@ -196,8 +112,8 @@ onMounted(() => {
 const getPlaceOrderList = async () => {
   isTableLoading.value = true
   try {
-    const params = {
-      ...pager,
+    const params: GetPlaceOrderListReq = {
+      ...pagination,
     }
     if (placeOrderForm.state) {
       params.state = placeOrderForm.state
@@ -263,7 +179,7 @@ const getGoodsTypeList = async () => {
   }
 }
 
-const deleteGoods = async (ids) => {
+const deleteGoods = async (ids: number[]) => {
   isDelBtnLoading.value = true
   try {
     await $api.deleteGoods({ id: ids })
@@ -285,16 +201,8 @@ const handleDelConfirm = () => {
   }
 }
 
-const handleDel = (row) => {
-  delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
-  isShowDelDialog.value = true
-  if (row) {
-    curItem.value = row
-  }
-}
-
-const handleSelectionChange = (list) => {
-  const arr = []
+const handleSelectionChange = (list: PlaceOrderItem[]) => {
+  const arr = [] as number[]
   list.map((item) => {
     arr.push(item.id)
   })
@@ -306,28 +214,25 @@ const handleCreate = () => {
   isShowAEDialog.value = true
 }
 
-const handleEdit = (row) => {
+function handleEdit(row: PlaceOrderItem) {
   dialogMode.value = DIALOG_MODE_EDIT
   curItem.value = row
   isShowAEDialog.value = true
 }
 
-const handleQuery = () => {
-  pager.page = 1
-  getGoodsList()
+function handleDel(row?: PlaceOrderItem) {
+  delMode.value = row ? DEL_DIALOG_SINGLE : DEL_DIALOG_MULTIPLE
+  isShowDelDialog.value = true
+  if (row) {
+    curItem.value = row
+  }
 }
 
-const handleReset = (form) => {
-  ctx.$refs[form].resetFields()
-  getGoodsList()
+function handleToDetail(row: PlaceOrderItem) {
+  emit("toDetail", row)
 }
 
-const handleCurrentChange = (current) => {
-  pager.page = current
-  getGoodsList()
-}
-
-const modifyLabelValue = (list) => {
+const modifyLabelValue = (list: GoodsTypeItem[]) => {
   list.forEach((item) => {
     item.label = item.name
     item.value = item.id
@@ -335,10 +240,6 @@ const modifyLabelValue = (list) => {
       modifyLabelValue(item.children)
     }
   })
-}
-
-const handleToDetail = (row) => {
-  emit("toDetail", row)
 }
 </script>
 
