@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-07-18 17:24:55
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-10 17:45:14
+ * @LastEditTime: 2021-10-07 06:01:59
 -->
 <template>
   <keep-alive>
@@ -20,7 +20,7 @@
   </keep-alive>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { PlaceOrderList } from "@/components";
 import { getCurrentInstance, ref } from "vue";
 

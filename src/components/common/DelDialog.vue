@@ -3,13 +3,13 @@
  * @Author: mjqin
  * @Date: 2021-05-29 18:15:29
  * @LastEditors: mjqin
- * @LastEditTime: 2021-10-07 04:19:29
+ * @LastEditTime: 2021-10-07 06:30:17
 -->
 <template>
   <div>
     <el-dialog :width="420" title="提示" v-model="visible">
       <span>{{
-        contents.length > 0 ? `您确定要删除${content}吗？` : "您确定要删除吗？"
+        props.contents.length > 0 ? `您确定要删除${content}吗？` : "您确定要删除吗？"
       }}</span>
       <template #footer>
         <span class="dialog-footer">
@@ -23,16 +23,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import type { ComponentInternalInstance } from 'vue'
-import { watch, computed, getCurrentInstance } from "vue"
-import { useShowDialog } from "@/hooks/components/useShowDialog.ts"
+import { computed } from "vue"
+import { useShowDialog } from "@/hooks/components/useShowDialog"
 const props = defineProps<{
   modelValue: boolean
   contents: array
   isBtnLoading: boolean
 }>()
 const emit = defineEmits(["update:modelValue", "delConfirm"])
-const { proxy: ctx } = getCurrentInstance() as ComponentInternalInstance
 
 const content = computed(() => {
   return props.contents.join(",")

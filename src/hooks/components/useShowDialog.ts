@@ -3,14 +3,14 @@
  * @Author: mjqin
  * @Date: 2021-09-12 22:03:38
  * @LastEditors: mjqin
- * @LastEditTime: 2021-10-04 17:53:40
+ * @LastEditTime: 2021-10-07 06:30:15
  */
 import { ref, watch } from 'vue';
 
 interface CommonDialogProps {
-    mode: 'add' | 'edit';
+    mode?: 'add' | 'edit';
     modelValue: Boolean;
-    curItem: any;
+    curItem?: any;
 }
 
 export function useShowDialog(

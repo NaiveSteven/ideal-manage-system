@@ -3,7 +3,7 @@
  * @Author: mjqin
  * @Date: 2021-08-10 23:33:08
  * @LastEditors: mjqin
- * @LastEditTime: 2021-09-10 17:44:38
+ * @LastEditTime: 2021-10-07 06:02:12
 -->
 <template>
   <OrderStep />
@@ -87,6 +87,6 @@
   </el-card>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { OrderStep } from "@/components"
 </script>
